@@ -9,6 +9,9 @@
 	
 		<ul class="menuleft insidecol">
 		<li {if $method eq 'index'}class="on"{/if}>{$tr->link('Tickets', '/tickets')}</li>
+
+		<li {if $method eq 'timeline'}class="on"{/if}>{$tr->link('Timeline', '/tickets/timeline')}</li>
+
 		<li {if $method eq 'categories'}class="on"{/if}>{$tr->link('Categories', '/tickets/categories')}</li>
 		{if $module_modify eq '1'}
 		<li><a href="{$html->url('/tickets/view')}">{t}Create new ticket{/t}</a></li>

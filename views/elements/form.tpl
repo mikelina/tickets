@@ -109,6 +109,8 @@ $(document).ready(function(){
 
 {$view->element("form_categories")}
 
+{$view->element("form_tree")}
+
 {if strnatcmp($conf->majorVersion, '3.3') <= 0}
 	{assign_associative var="params" containerId='attachContainer' collection="true" relation='attach' title='Attachments'}
 	{$view->element("form_file_list", $params)}
