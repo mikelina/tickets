@@ -32,7 +32,7 @@ $(document).ready( function (){
 		$("#saveNote").ajaxSubmit(optionsNoteCloseForm);
 	});
 
-	$("#listNote").find("input[name=deletenote]").live('click', function() {
+	$(document).delegate('#listNote input[name=deletenote]', 'click', function() {
 		refreshNoteList($(this));
 	});
 });	
@@ -42,7 +42,7 @@ function showNoteResponse(data, textStatus, jqXHR, closeTicket) {
 		alert(data.errorMsg);
 		$("#noteloader").hide();
 	} else {
-		var closeTicket = closeTicket || false;
+		var closeTicket = (typeof closeTicket == 'boolean') ? closeTicket : false;
 		$.ajax({
 			url: urlLoadNote,
 			type:"post",
@@ -102,9 +102,11 @@ function refreshNoteList(delButton) {
 		margin-left:570px !important;
 	}
 
+	#editornotes .author {
+		white-space: nowrap;
+	}
 
 	.editorheader .date {
-
 		text-align:left !important; padding-left:10px;
 	}
 		
@@ -115,11 +117,11 @@ function refreshNoteList(delButton) {
 
 	<div class="tab"><h2>{t}Notes{/t}</h2></div>
  
-	<div id="editornotes" style="padding-left:10px">
+	<div id="editornotes">
 
 	{strip}
 
-		<div id="listNote" style="margin:10px;">
+		<div id="listNote">
 		{if (!empty($object.EditorNote))}
             {foreach from=$object.EditorNote item="note" name=notes}
                 {assign_associative var="params" note=$note count=$smarty.foreach.notes.iteration}
@@ -131,22 +133,19 @@ function refreshNoteList(delButton) {
 		<form id="saveNote" action="{$html->url('/tickets/saveNote')}" method="post">
 		<input type="hidden" name="data[object_id]" value="{$object.id}"/>
 
-		<table class="editorheader ultracondensed" style="margin:-10px 0px 0px 10px">
+		<table class="editorheader ultracondensed">
 		<tr>
 			<td class="author">you</td>
 			<td class="date">now</td>
 		</tr>
 		</table>	
-		<textarea id="notetext" name="data[description]" 
-		style="margin-left:10px; height:110px; width:628px"></textarea>
-		<input type="submit" style="margin:10px" value="{t}send{/t}" />
+		<textarea id="notetext" name="data[description]" style="width: 100%"></textarea>
+		<input type="submit" style="margin:10px 10px 10px 0px;" value="{t}send{/t}"  />
 		<input type="button" id="saveNoteAndClose" value="{t}send & close{/t}"{if $conf->ticketStatus[$object.ticket_status] == "off"}disabled{/if} />
 		</form>
 		
 		<br style="clear:both" />
 		<div class="loader" id="noteloader" style="clear:both">&nbsp;</div>
-	
-
 	
 	{/strip}
 	</div>
