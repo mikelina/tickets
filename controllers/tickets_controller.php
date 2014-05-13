@@ -26,7 +26,7 @@
  */
 class TicketsController extends ModulesController {
 
-	public $uses = array("Ticket", "User", "Group");
+	public $uses = array('Ticket', "User", "Group");
 	var $helpers 	= array('BeTree', 'BeToolbar');
 
 	protected $moduleName = 'tickets';
