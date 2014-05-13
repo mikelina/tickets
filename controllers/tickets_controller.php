@@ -86,51 +86,21 @@ class TicketsController extends ModulesController {
 	 * view all tickets in a timeline view
 	 */
 
-	public function timeline($id = null, $order = "", $dir = true, $page = 1, $dim = 200) {
-		$conf  = Configure::getInstance() ;
+	public function timeline ($id = null, $order = "", $dir = true, $page = 1, $dim = 200) {
+    	$conf  = Configure::getInstance() ;
 		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
-		$filter["user_created"] = "";
-		$filter["Ticket.severity"] =  (!empty($this->data['severity'])) ? $this->data['severity'] : "";
-		if(!empty($this->data['status'])) {
-			$filter["Ticket.ticket_status"] = array_keys($this->data['status']);
-		} else {
-			$ticketStatus = array_intersect($conf->ticketStatus, array("draft", "on"));
-			$filter["Ticket.ticket_status"] = array_keys($ticketStatus);
-		}
-		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
-			$filter["status"] = "<> 'off'";
-		}
-
-		if (!empty($this->data['assigned_to'])) {
-			$filter["ObjectUser.switch"] = "assigned";
-			$filter["ObjectUser.user_id"] = $this->data['assigned_to'];
-		}
-
-		$filter["exp_resolution_date"] = "";
-		$filter["BEObject.user_created"] = (!empty($this->data['reporter'])) ? $this->data['reporter'] : "";
-		$filter["count_annotation"] = array("EditorNote");
-		$f = $filter;
+		$filter["count_annotation"] = array("Comment","EditorNote");
 		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
 		$this->loadCategories($filter["object_type_id"]);
-		$this->loadReporters();
-		$this->loadAssignedUsers();
-		if(!empty($this->data['status'])) {
-			$f["f_status"] = $this->data['status'];
+
+		foreach ($this->viewVars["objects"] as &$obj) {
+			$datetime1 = new DateTime($obj["created"]); //TODO date_start
+			$datetime2 = new DateTime($obj["modified"]); //TODO exp_resolution_date
+			$interval = $datetime1->diff($datetime2);
+			$obj["days"] = $interval->format('%a');
 		}
-		if(!empty($this->data['reporter'])) {
-			$f["f_reporter"] = $this->data['reporter'];
-		}
-		if(!empty($this->data['severity'])) {
-			$f["f_severity"] = $this->data['severity'];
-		}
-		if(empty($this->data) || !empty($this->data['hide_status_off'])) {
-			$f["hide_status_off"] = "true";
-		}
-		if (!empty($this->data['assigned_to'])) {
-			$f["f_assigned_to"] = $this->data['assigned_to'];
-		}
-		$this->set("filter",$f);
-	}
+	 }
+
 
 	public function view($id = null) {
 		$this->viewObject($this->Ticket, $id);
