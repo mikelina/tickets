@@ -103,12 +103,18 @@ class TicketsController extends ModulesController {
                     //"BEObject.object_type_id" => Configure::read("objectTypes.event.id")),
             )));
 
+        if(!empty($this->params["url"]["Date_Day"])) {
+            $startDay = $this->params["url"]["Date_Year"] . "-" . 
+                $this->params["url"]["Date_Month"] . "-" . 
+                str_pad($this->params["url"]["Date_Day"], 2, "0", STR_PAD_LEFT);
+        } else {
+            $startDay = date("Y-m-d");
+        }
+		
+		$start = strtotime($startDay);
 
-		$now = new DateTime(); // 
-
-		//day from first monday before NOW
-		$start = strtotime($now->format('Y-m-d'));
-		$prevmonday = strtotime('Monday this week',$start);
+		//day from first monday before ...
+		$prevmonday = strtotime('last monday',$start);
         $mondayshift = ($start-$prevmonday)/86400;
 		foreach ($tickets as &$obj) {
 			//per ogni tiket prende i subtask (...)
@@ -130,6 +136,7 @@ class TicketsController extends ModulesController {
 			}
 		}
 
+		$this->set("start", $start);
 		$this->set("mondayshift", $mondayshift);
 		$this->set("prevmonday", $prevmonday);
         $this->set("tickets", $tickets);

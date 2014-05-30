@@ -3,18 +3,22 @@
 
 <style scoped>
 
-.timeline {
-    overflow: hidden;
-}
+    .timeline {
+        overflow: hidden;
+    }
+
+    .timeline header {
+        background-image: 
+        linear-gradient(90deg, gray 1px, transparent 1px);
+        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
+    }
+
     .matrix {
         background-color:rgba(255,255,255,0);
         background-image: linear-gradient(white 0px, transparent 0px),
-        
         linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px),
-        
         linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px),
         linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
-        
         background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
         background-position: -{$coeff*2}px;
     }
@@ -28,6 +32,7 @@
         display:block; 
         height:{$coeff}px;
         padding-left:5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
      }
 
     .matrix .mainticket .thead .plusminus {
@@ -37,6 +42,27 @@
         padding-right: 10px;
         cursor: pointer;
     }
+
+    .flowticket {
+        margin-top:0px;
+        background-color:pink; 
+        font-weight: normal;
+        height:{$coeff}px;
+        opacity:1;
+        font-size:12px;
+        color:white !important;
+        padding-left:5px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
+    }
+
+    .flowticket.analysis { background-color: #cc6666 }
+    .flowticket.tagging  { background-color: #ff9900 }
+    .flowticket.editing { background-color: #99cc66 }
+    .flowticket.checking  { background-color: #6e9bed }
+    .flowticket.revision  { background-color: #3d82c7 }
+    .flowticket.release  { background-color: #073564 }
+
+    .flowticket.resolved  { }
 
     .matrix .mainticket.closed  {
         margin-bottom:0px;
@@ -55,27 +81,7 @@
     .matrix .mainticket.closed .flowticket * {
         display:none;
     }
-
-    .flowticket {
-        margin-top:0px;
-        background-color:pink; 
-        font-weight: normal;
-        height:{$coeff}px;
-        opacity:1;
-        font-size:12px;
-        color:white !important;
-        padding-left:5px;
-    }
-
-    .flowticket.analysis { background-color: #cc6666 }
-    .flowticket.tagging  { background-color: #ff9900 }
-    .flowticket.editing { background-color: #99cc66 }
-    .flowticket.checking  { background-color: #6e9bed }
-    .flowticket.revision  { background-color: #3d82c7 }
-    .flowticket.release  { background-color: #073564 }
-
-    .flowticket.resolved  { }
-
+    
     .info_ticket {
         display:none;
         width:200px;
@@ -143,6 +149,7 @@
 </script>
 
 <div class="timeline">
+
 <header>
     <table style="width:100%">
         <tr>
@@ -153,7 +160,7 @@
      <table style="width:100%">
         <tr>
             {if $mondayshift > 0}<td style="width:{$mondayshift*$coeff}px; border-left:1px solid gray"></td>{/if}
-            <td style="padding-left:5px; border-left:1px solid gray">Today</td>
+            <td style="padding-left:5px; border-left:1px solid #FF3300">{if !empty($html->params.url.Date_Day)}start{else}today{/if}</td>
         </tr>
     </table>
   
