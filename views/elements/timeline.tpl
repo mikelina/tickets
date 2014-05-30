@@ -28,11 +28,13 @@
     }
 
     .matrix .mainticket .thead {
-        background-color:rgba(255,255,255,.5); 
+        background-color:rgba(255,255,255,1); 
         display:block; 
         height:{$coeff}px;
         padding-left:5px;
         box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        position:relative;
+        z-index:800
      }
 
     .matrix .mainticket .thead .plusminus {
@@ -81,16 +83,17 @@
     .matrix .mainticket.closed .flowticket * {
         display:none;
     }
-    
+
     .info_ticket {
         display:none;
         width:200px;
         color:#FFF;
         background-color: #333;
         position:absolute;
-        margin-top:{$coeff/2}px;
         padding:10px;
-        z-index: 100;
+        z-index: 900;
+        margin-left: -5px;
+        margin-top: 2px;
     }
 
     .flowticket .ncomments {
@@ -118,16 +121,31 @@
         margin: 5px 5px 5px 0px
     }
 
-    .info_ticket LI {
+    .info_ticket TR {
         white-space: nowrap;
         border-top:1px solid rgba(255,255,255,.1);
         padding:2px; 
         margin:2px;
     }
 
- .info_ticket LI:first-child {
-    border:0px;
- }
+     .info_ticket TR:first-child {
+        border:0px;
+     }
+
+     TD.tcal {
+        text-align: right;
+     }
+
+     .today {
+        color:red;
+        position:absolute;
+        margin-top:-27px;
+        padding-top:20px;
+        height:100%;
+        padding-left:5px;
+        border-left:1px solid rgba(255,0,0,1);
+        margin-left:{$todayshift*$coeff}px;
+     }
 </style>
 
 <script>
@@ -150,19 +168,20 @@
 
 <div class="timeline">
 
-<header>
-    <table style="width:100%">
+<header style="padding-bottom:20px;">
+    <table style="width:100%;">
         <tr>
             <td style="border-left:1px solid gray">{$prevmonday|date_format:'%a %d %b'}</td>
+        </tr>
+    </table>
 
-        </tr>
-    </table>
-     <table style="width:100%">
-        <tr>
-            {if $mondayshift > 0}<td style="width:{$mondayshift*$coeff}px; border-left:1px solid gray"></td>{/if}
-            <td style="padding-left:5px; border-left:1px solid #FF3300">{if !empty($html->params.url.Date_Day)}start{else}today{/if}</td>
-        </tr>
-    </table>
+<!--
+    <div style="margin-left:{$mondayshift*$coeff}px; padding-left:10px; border-left:1px solid gray">
+       start
+    </div>
+-->
+    <div class="today">today</div>
+
   
 </header>
 <div class="matrix" style="width:100%">
@@ -172,41 +191,42 @@
             <div class="thead"><span class="plusminus">+</span><a href="{$html->url('/')}view/{$ticket.id}">{$ticket.title}</a></div>
             {foreach from=$ticket.subtasks|default:[] item=subtask}
             {$assigned = array()}
-            <a href="{$html->url('/')}view/{$subtask.id}">
+            
                 <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.ticket_status}" 
-                style="margin-left:{$subtask.shift*$coeff}px;width:{$subtask.days*$coeff}px">
+                style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px; border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,.5)">
                    {$subtask.ticket_status|default:''} {if ($subtask.Annotation|@count > 0)}<span class="ncomments">{$subtask.Annotation|@count}</span>{/if}
                    <div class="info_ticket">
-                        <ul>
-                            <li>category: {$subtask.Category.0.label|default:''}</li> 
-                            <li>status: {$subtask.ticket_status|default:''}</li>
+                        <table>
+                            <tr><td colspan="2">title: {$subtask.title|default:'<i>no title</i>'}</td></tr>
+                            <tr><td colspan="2">category: {$subtask.Category.0.label|default:''}</td></tr>
+                            <tr><td colspan="2">status: {$subtask.ticket_status|default:''}</td></tr>
                             {if !empty($subtask.User)}
-                            <li>
+                                <tr><td colspan="2">
+                                    {foreach from=$subtask.User item=user}
+                                        {if $user.ObjectUser.switch=="assigned"}
+                                        <div class="profile">
+                                           {$user.realname|truncate:2:''}
+                                        </div>
+                                        {/if}
+                                    {/foreach}
+                                </td></tr>
                                 {foreach from=$subtask.User item=user}
-                                    {if $user.ObjectUser.switch=="assigned"}
-                                     <div class="profile">
-                                       {$user.realname|truncate:2:''}
-                                    </div>
-                                    {/if}
+                                <tr><td colspan="2">{$user.ObjectUser.switch}: {$user.realname}</td></tr>
                                 {/foreach}
-                            </li>
-                            {foreach from=$subtask.User item=user}
-                             <li>
-                                 {$user.ObjectUser.switch}: {$user.realname}
-                             </li>
-                            {/foreach}
                             {/if}
-                            {if !empty($subtask.start_date)}<li>start on: {$subtask.start_date|date_format:'%a %d %b %Y'}</li>{/if}
-                            {if !empty($subtask.exp_resolution_date)}<li>dued on: {$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</li>{/if}
-                            {if !empty($subtask.closed_date)}<li>closed on: {$subtask.closed_date|date_format:'%a %d %b %Y'}</li>{/if}
-                            <li>
-                                {$subtask.shift}
-                            </li>
+                            {if !empty($subtask.start_date)}<tr><td>start on:</td><td class="tcal">{$subtask.start_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
+                            {if !empty($subtask.exp_resolution_date)}<tr><td>dued on:</td><td class="tcal">{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
+                            {if !empty($subtask.closed_date)}<tr><td>closed on:</td><td class="tcal">{$subtask.closed_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
+                            
+                            {if $subtask.delay > 0}
+                                <tr><td>delay:</td><td>{$subtask.delay|default:''} days</td></tr>
+                            {/if}
+                        </table>
 
-                        </ul>
+                        <a style="margin-top:10px" class="BEbutton" href="{$html->url('/')}view/{$subtask.id}">more details</a>
                    </div>
                 </div>
-            </a>
+           
             {/foreach} 
         </div>
 {/if}

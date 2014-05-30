@@ -6,6 +6,7 @@ CREATE TABLE tickets (
   ticket_status VARCHAR(30) NULL COMMENT 'ticket status, depends from object ',
   exp_resolution_date DATETIME NULL COMMENT 'expected resolution date',
   closed_date DATETIME NULL COMMENT 'actual resolution date, closed issue date',
+  start_date DATETIME NULL COMMENT 'start date',
   percent_completed INTEGER NULL COMMENT 'resolution percentage complete',
   PRIMARY KEY(id),
   FOREIGN KEY(id)

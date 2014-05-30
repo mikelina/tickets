@@ -86,22 +86,9 @@ class TicketsController extends ModulesController {
 	 * view all tickets in a timeline view
 	 */
 
-	public function timeline ($id = null, $order = "", $dir = true, $page = 1, $dim = 200) {
+	public function timeline () {
     	$conf  = Configure::getInstance() ;
-		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
-		$filter["count_annotation"] = array("Comment","EditorNote");
-		
 		$tickets = array();
-        $this->Ticket->containLevel("default");
-            $tickets = $this->Ticket->find("all", array(
-                    "conditions" => array(
-                    //start_date maggiore o uguale ad oggi o alla data passata
-                    //non hanno relazione subtask_of
-                    //ordinati per pubblicazione
-
-                    //"Event.id IN (" . implode(",", $calendarData["objIds"]) . ")",
-                    //"BEObject.object_type_id" => Configure::read("objectTypes.event.id")),
-            )));
 
         if(!empty($this->params["url"]["Date_Day"])) {
             $startDay = $this->params["url"]["Date_Year"] . "-" . 
@@ -110,12 +97,23 @@ class TicketsController extends ModulesController {
         } else {
             $startDay = date("Y-m-d");
         }
-		
-		$start = strtotime($startDay);
+		$timeline_start = strtotime($startDay);
+
+        $tickets = $this->Ticket->find("all", array(
+                "conditions" => array(
+                //exp_resolution_date o closed_date maggiore o uguale ad una settimana prima della data passata (oppure oggi)
+                //non hanno relazione subtask_of
+                //ordinati per pubblicazione
+        		)
+        ));
 
 		//day from first monday before ...
-		$prevmonday = strtotime('last monday',$start);
-        $mondayshift = ($start-$prevmonday)/86400;
+		$prevmonday = strtotime('last monday',$timeline_start);
+        $mondayshift = ($timeline_start-$prevmonday)/86400;
+
+        //where is today?
+       	$todayshift = (strtotime('today')-$prevmonday)/86400;
+
 		foreach ($tickets as &$obj) {
 			//per ogni tiket prende i subtask (...)
 			foreach ($obj['RelatedObject'] as $r) {
@@ -124,20 +122,32 @@ class TicketsController extends ModulesController {
 					    'conditions' => array('Ticket.id' => $r['object_id'])
 					));
 					//duration in days of the ticket
-					$datetime1 = strtotime($detail["start_date"]);
-					$datetime2 = strtotime($detail["exp_resolution_date"]);
-					$interval = $datetime2-$datetime1;
-					$detail["days"] = $interval/86400;
-					//distance from now (or passed view starting date) 
-					$shift = ($datetime1-$start)/86400;
-					$detail["shift"] = $shift+$mondayshift;
+					$start_date = strtotime($detail["start_date"]);
+					$closed_date = strtotime($detail["closed_date"]);
+					$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
+					
+					if (!empty($detail["closed_date"])) {
+						$end_date = $closed_date;
+					} else {
+						$end_date = $exp_resolution_date;
+					}
+
+					$interval = $end_date-$start_date; 
+					$delay = $closed_date-$exp_resolution_date;
+					$shift = ($start_date-$timeline_start)/86400;
+
+					$detail["days"] = $interval/86400; //width in days of the ticket
+					$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
+					$detail["delay"] = $delay/86400; //delay in days
+
 					$obj["subtasks"][] = $detail;
 				}
 			}
 		}
 
-		$this->set("start", $start);
+		$this->set("timeline_start", $timeline_start);
 		$this->set("mondayshift", $mondayshift);
+		$this->set("todayshift", $todayshift);
 		$this->set("prevmonday", $prevmonday);
         $this->set("tickets", $tickets);
         //pr($tickets); exit;

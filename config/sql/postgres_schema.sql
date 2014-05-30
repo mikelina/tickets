@@ -6,6 +6,7 @@ CREATE TABLE tickets (
   ticket_status VARCHAR(30),
   exp_resolution_date timestamp without time zone,
   closed_date timestamp without time zone,
+  start_date timestamp without time zone,
   percent_completed INTEGER
 );
 
