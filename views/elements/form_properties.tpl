@@ -2,6 +2,7 @@
 
 <fieldset id="properties">			
 
+
 	<table class="bordered">		
 		<tr>
 			<th>{t}status{/t}</th>
@@ -27,6 +28,26 @@
 				</select>
 			</td>
 		</tr>
+		
+		<tr>
+			<th>{t}scheduled from{/t}:</th>
+			<td colspan="4">
+				<input size="10" type="text" style="vertical-align:middle"
+				name="data[start_date]" id="start"
+				value="{$object.start_date|default:''}" />
+			</td>
+		</tr>
+		<tr>
+			<th>
+				{t}expected resolution date{/t}:&nbsp;
+			</th>
+			<td colspan="4">
+				<input size="10" type="text" style="vertical-align:middle"
+				class="dateinput" name="data[exp_resolution_date]" id="expDate"
+				value="{if !empty($object.exp_resolution_date)}{$object.exp_resolution_date|date_format:$conf->datePattern}{/if}" />
+				&nbsp;
+			</td>
+		</tr>
 		{bedev}
 		<tr>
 			<th>
@@ -45,17 +66,6 @@
 			</td>
 		</tr>
 		{/bedev}
-		<tr>
-			<th>
-				{t}expected resolution date{/t}:&nbsp;
-			</th>
-			<td colspan="4">
-				<input size="10" type="text" style="vertical-align:middle"
-				class="dateinput" name="data[exp_resolution_date]" id="expDate"
-				value="{if !empty($object.exp_resolution_date)}{$object.exp_resolution_date|date_format:$conf->datePattern}{/if}" />
-				&nbsp;
-			</td>
-		</tr>
 		{if !empty($object.closed_date)}
 		<tr>
 			<th>{t}closed date{/t}:</th>

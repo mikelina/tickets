@@ -26,7 +26,7 @@
  */
 class TicketsController extends ModulesController {
 
-	public $uses = array('Ticket', "User", "Group");
+	public $uses = array('Ticket', 'User', 'Group','Category') ;
 	var $helpers 	= array('BeTree', 'BeToolbar');
 
 	protected $moduleName = 'tickets';
@@ -90,16 +90,53 @@ class TicketsController extends ModulesController {
     	$conf  = Configure::getInstance() ;
 		$filter["object_type_id"] = array($conf->objectTypes['ticket']["id"]);
 		$filter["count_annotation"] = array("Comment","EditorNote");
-		$this->paginatedList($id, $filter, $order, $dir, $page, $dim);
-		$this->loadCategories($filter["object_type_id"]);
+		
+		$tickets = array();
+        $this->Ticket->containLevel("default");
+            $tickets = $this->Ticket->find("all", array(
+                    "conditions" => array(
+                    //start_date maggiore o uguale ad oggi o alla data passata
+                    //non hanno relazione subticket_of
+                    //ordinati per pubblicazione
 
-		foreach ($this->viewVars["objects"] as &$obj) {
-			$datetime1 = new DateTime($obj["created"]); //TODO date_start
-			$datetime2 = new DateTime($obj["modified"]); //TODO exp_resolution_date
-			$interval = $datetime1->diff($datetime2);
-			$obj["days"] = $interval->format('%a');
+                    //"Event.id IN (" . implode(",", $calendarData["objIds"]) . ")",
+                    //"BEObject.object_type_id" => Configure::read("objectTypes.event.id")),
+            )));
+
+
+		$now = new DateTime(); // 
+
+		//day from first monday before NOW
+		$start = strtotime($now->format('Y-m-d'));
+		$prevmonday = strtotime('Monday this week',$start);
+        $mondayshift = ($start-$prevmonday)/86400;
+		foreach ($tickets as &$obj) {
+			//per ogni tiket prende i subticket (...)
+			foreach ($obj['RelatedObject'] as $r) {
+				if($r['switch'] == 'subticket') {	
+					$detail = $this->Ticket->find('first', array(
+					    'conditions' => array('Ticket.id' => $r['object_id'])
+					));
+					//duration in days of the ticket
+					$datetime1 = strtotime($detail["start_date"]);
+					$datetime2 = strtotime($detail["exp_resolution_date"]);
+					$interval = $datetime2-$datetime1;
+					$detail["days"] = $interval/86400;
+					//distance from now (or passed view starting date) 
+					$shift = ($datetime1-$start)/86400;
+					$detail["shift"] = $shift+$mondayshift;
+					$obj["subtickets"][] = $detail;
+				}
+			}
 		}
+
+		$this->set("mondayshift", $mondayshift);
+		$this->set("prevmonday", $prevmonday);
+        $this->set("tickets", $tickets);
+        //pr($tickets); exit;
+
 	 }
+
 
 
 	public function view($id = null) {

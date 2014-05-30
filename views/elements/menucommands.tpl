@@ -15,8 +15,12 @@ Left column menu.
 		<label class="{$moduleName}" rel="{$back}">{t}{$currentModule.label}{/t}</label>
 	</div> 
 	
-	
-	{if !empty($method) && $method != "index" && $method != "categories"}
+	{if !empty($method) && $method == "timeline"}
+
+		filtri temporali?
+
+
+	{elseif !empty($method) && $method != "index" && $method != "categories"}
 	<div class="insidecol">
 		<input class="bemaincommands" type="button" value=" {t}Save{/t} " name="save" id="saveBEObject" />
 		<!-- <input class="bemaincommands" type="button" value=" {t}clone{/t} " name="clone" id="cloneBEObject" /> -->

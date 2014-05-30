@@ -7,7 +7,7 @@
 		{$view->element("messages")}
 	{/if}
 	
-		<ul class="menuleft insidecol">
+	<ul class="menuleft insidecol">
 		<li {if $method eq 'index'}class="on"{/if}>{$tr->link('Tickets', '/tickets')}</li>
 
 		<li {if $method eq 'timeline'}class="on"{/if}>{$tr->link('Timeline', '/tickets/timeline')}</li>
@@ -20,15 +20,21 @@
 
 	</ul>
 
-<h1>{$method}</h1>
-
 {$view->element("export")}
 
-{if (!empty($method)) && $method eq "index"}
+{if !empty($method) && $method eq "index"}
 
 		<div class="insidecol publishingtree">
 			
 			{$view->element("tree")}
+		
+		</div>
+
+{elseif !empty($method) && $method eq "timeline"}
+		
+		<div class="insidecol publishingtree">
+			
+		tree con le sole pubbliczioni??
 		
 		</div>
 
