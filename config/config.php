@@ -34,7 +34,18 @@ $config["objRelationType"] = array(
 		"hidden" => false,
 		"left" 	 => array("ticket"),
 		"right"  => array("ticket")
-	)
+	),
+
+	"subtask" => array(
+		"hidden" => false,
+		"label" => "subtask",
+		"left" => array("ticket"),
+		"right" => array("ticket"),
+		"params" => array(),
+		"inverse" => "subtask_of",
+		"inverseLabel" => "subtask of",
+	),
+
 );
 
 

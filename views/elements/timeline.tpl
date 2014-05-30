@@ -10,15 +10,13 @@
         background-color:rgba(255,255,255,0);
         background-image: linear-gradient(white 0px, transparent 0px),
         
-        linear-gradient(90deg, rgba(0,0,0,.1) {$coeff*2}px, transparent 1px),
+        linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px),
         
-        linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px),
         linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
-        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
         
-        background-position:-{$coeff*2}px;
-
-
+        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
+        background-position: -{$coeff*2}px;
     }
 
     .matrix .mainticket {
@@ -162,22 +160,22 @@
 </header>
 <div class="matrix" style="width:100%">
 {foreach from=$tickets item=ticket}
-{if !empty($ticket.subtickets)}
+{if !empty($ticket.subtasks)}
         <div class="mainticket">
             <div class="thead"><span class="plusminus">+</span><a href="{$html->url('/')}view/{$ticket.id}">{$ticket.title}</a></div>
-            {foreach from=$ticket.subtickets|default:[] item=subticket}
+            {foreach from=$ticket.subtasks|default:[] item=subtask}
             {$assigned = array()}
-            <a href="{$html->url('/')}view/{$subticket.id}">
-                <div class="flowticket {$subticket.Category.0.name|default:''} {$subticket.ticket_status}" 
-                style="margin-left:{$subticket.shift*$coeff}px;width:{$subticket.days*$coeff}px">
-                   {$subticket.ticket_status|default:''} {if ($subticket.Annotation|@count > 0)}<span class="ncomments">{$subticket.Annotation|@count}</span>{/if}
+            <a href="{$html->url('/')}view/{$subtask.id}">
+                <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.ticket_status}" 
+                style="margin-left:{$subtask.shift*$coeff}px;width:{$subtask.days*$coeff}px">
+                   {$subtask.ticket_status|default:''} {if ($subtask.Annotation|@count > 0)}<span class="ncomments">{$subtask.Annotation|@count}</span>{/if}
                    <div class="info_ticket">
                         <ul>
-                            <li>category: {$subticket.Category.0.label|default:''}</li> 
-                            <li>status: {$subticket.ticket_status|default:''}</li>
-                            {if !empty($subticket.User)}
+                            <li>category: {$subtask.Category.0.label|default:''}</li> 
+                            <li>status: {$subtask.ticket_status|default:''}</li>
+                            {if !empty($subtask.User)}
                             <li>
-                                {foreach from=$subticket.User item=user}
+                                {foreach from=$subtask.User item=user}
                                     {if $user.ObjectUser.switch=="assigned"}
                                      <div class="profile">
                                        {$user.realname|truncate:2:''}
@@ -185,17 +183,17 @@
                                     {/if}
                                 {/foreach}
                             </li>
-                            {foreach from=$subticket.User item=user}
+                            {foreach from=$subtask.User item=user}
                              <li>
                                  {$user.ObjectUser.switch}: {$user.realname}
                              </li>
                             {/foreach}
                             {/if}
-                            {if !empty($subticket.start_date)}<li>start on: {$subticket.start_date|date_format:'%a %d %b %Y'}</li>{/if}
-                            {if !empty($subticket.exp_resolution_date)}<li>dued on: {$subticket.exp_resolution_date|date_format:'%a %d %b %Y'}</li>{/if}
-                            {if !empty($subticket.closed_date)}<li>closed on: {$subticket.closed_date|date_format:'%a %d %b %Y'}</li>{/if}
+                            {if !empty($subtask.start_date)}<li>start on: {$subtask.start_date|date_format:'%a %d %b %Y'}</li>{/if}
+                            {if !empty($subtask.exp_resolution_date)}<li>dued on: {$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</li>{/if}
+                            {if !empty($subtask.closed_date)}<li>closed on: {$subtask.closed_date|date_format:'%a %d %b %Y'}</li>{/if}
                             <li>
-                                {$subticket.shift}
+                                {$subtask.shift}
                             </li>
 
                         </ul>

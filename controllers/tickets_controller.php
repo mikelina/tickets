@@ -96,7 +96,7 @@ class TicketsController extends ModulesController {
             $tickets = $this->Ticket->find("all", array(
                     "conditions" => array(
                     //start_date maggiore o uguale ad oggi o alla data passata
-                    //non hanno relazione subticket_of
+                    //non hanno relazione subtask_of
                     //ordinati per pubblicazione
 
                     //"Event.id IN (" . implode(",", $calendarData["objIds"]) . ")",
@@ -111,9 +111,9 @@ class TicketsController extends ModulesController {
 		$prevmonday = strtotime('Monday this week',$start);
         $mondayshift = ($start-$prevmonday)/86400;
 		foreach ($tickets as &$obj) {
-			//per ogni tiket prende i subticket (...)
+			//per ogni tiket prende i subtask (...)
 			foreach ($obj['RelatedObject'] as $r) {
-				if($r['switch'] == 'subticket') {	
+				if($r['switch'] == 'subtask') {	
 					$detail = $this->Ticket->find('first', array(
 					    'conditions' => array('Ticket.id' => $r['object_id'])
 					));
@@ -125,7 +125,7 @@ class TicketsController extends ModulesController {
 					//distance from now (or passed view starting date) 
 					$shift = ($datetime1-$start)/86400;
 					$detail["shift"] = $shift+$mondayshift;
-					$obj["subtickets"][] = $detail;
+					$obj["subtasks"][] = $detail;
 				}
 			}
 		}
