@@ -33,7 +33,7 @@
 			</tr>
 			{/if}
 			<tr>			
-			{assign var="prevsta" value="draft"}
+			
 				<th>
 					<label>{t}status:{/t}</label>
 				</th>
@@ -50,6 +50,7 @@
 					<table class="ticket-status">
 						<tr>
 							<td style="vertical-align: top">
+						{assign var="prevsta" value="draft"}
 						{foreach item=sta key='key' from=$conf->ticketStatus}
 							{if $prevsta!=$sta}
 								</td>

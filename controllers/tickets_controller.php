@@ -88,6 +88,7 @@ class TicketsController extends ModulesController {
 
 	public function timeline () {
     	$conf  = Configure::getInstance() ;
+		
 		$tickets = array();
 
         if(!empty($this->params["url"]["Date_Day"])) {
@@ -99,13 +100,33 @@ class TicketsController extends ModulesController {
         }
 		$timeline_start = strtotime($startDay);
 
+
+		$objects = array();
+		$name = "tickets";
+/*
+		$query = 	"SELECT tickets.*, areas.public_name as publication_name, trees.area_id, object_relations.*".
+					"FROM tickets ".
+					"INNER join objects on objects.id = tickets.id ".
+					"LEFT JOIN trees ON tickets.id = trees.id ".
+					"LEFT JOIN areas ON areas.id = area_id ".
+					"INNER JOIN object_relations ON object_relations.id = tickets.id ".
+					"AND object_relations.switch = 'subtask' ".
+					"GROUP BY tickets.id ".
+					"ORDER BY publication_name desc";
+	    $tickets = $this->Ticket->query($query);
+*/
+
+
         $tickets = $this->Ticket->find("all", array(
                 "conditions" => array(
-                //exp_resolution_date o closed_date maggiore o uguale ad una settimana prima della data passata (oppure oggi)
-                //non hanno relazione subtask_of
-                //ordinati per pubblicazione
+                // TODO
+                //solo tickets senza relazione 'subtask_of'
+                //exp_resolution_date oppure closed_date suoi o di tutti i suoi subtickets, maggiore o uguale ad una settimana prima della data passata (default oggi)
+                //raggruppati per pubblicazione
+                //coi filtri passati
         		)
         ));
+
 
 		//day from first monday before ...
 		$prevmonday = strtotime('last monday',$timeline_start);
@@ -115,7 +136,7 @@ class TicketsController extends ModulesController {
        	$todayshift = (strtotime('today')-$prevmonday)/86400;
 
 		foreach ($tickets as &$obj) {
-			//per ogni tiket prende i subtask (...)
+			//per ogni tiket prende i dettagli dei subtask (...)
 			foreach ($obj['RelatedObject'] as $r) {
 				if($r['switch'] == 'subtask') {	
 					$detail = $this->Ticket->find('first', array(

@@ -1,6 +1,5 @@
 {$coeff=20}
 
-
 <style scoped>
 
     .timeline {
@@ -9,7 +8,7 @@
 
     .timeline header {
         background-image: 
-        linear-gradient(90deg, gray 1px, transparent 1px);
+        linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
         background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
     }
 
@@ -65,7 +64,16 @@
     .flowticket.release  { background-color: #073564 }
 
     .flowticket.resolved  { }
-
+/*
+.flowticket.overdelayed  {
+    background: 
+    linear-gradient(135deg, red 25%, transparent 25%) -50px 0,
+    linear-gradient(225deg, red 25%, transparent 25%) -50px 0,
+    linear-gradient(315deg, red 25%, transparent 25%),
+    linear-gradient(45deg, red 25%, transparent 25%);   
+    background-size: 20px 20px;
+}
+*/
     .matrix .mainticket.closed  {
         margin-bottom:0px;
     }
@@ -88,7 +96,7 @@
         display:none;
         width:200px;
         color:#FFF;
-        background-color: #333;
+        background-color: #444;
         position:absolute;
         padding:10px;
         z-index: 900;
@@ -171,35 +179,74 @@
 <header style="padding-bottom:20px;">
     <table style="width:100%;">
         <tr>
-            <td style="border-left:1px solid gray">{$prevmonday|date_format:'%a %d %b'}</td>
+            <td style="border-left:1px solid rgba(255,255,255,.3)">{$prevmonday|date_format:'%a %d %b'}</td>
         </tr>
     </table>
 
-<!--
-    <div style="margin-left:{$mondayshift*$coeff}px; padding-left:10px; border-left:1px solid gray">
-       start
-    </div>
--->
     <div class="today">today</div>
 
   
 </header>
 <div class="matrix" style="width:100%">
+
+<!-- TODO foreach pubblicazioni -->
+
+<div class="tab"><h2>Il cricco di teodoro</h2></div>
+
+<div id="niknamepubblicazione">  
+
+
 {foreach from=$tickets item=ticket}
 {if !empty($ticket.subtasks)}
-        <div class="mainticket">
+        <div class="mainticket"> <!-- ticket principale -->
+           
             <div class="thead"><span class="plusminus">+</span><a href="{$html->url('/')}view/{$ticket.id}">{$ticket.title}</a></div>
+            
             {foreach from=$ticket.subtasks|default:[] item=subtask}
             {$assigned = array()}
             
                 <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.ticket_status}" 
                 style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px; border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,.5)">
-                   {$subtask.ticket_status|default:''} {if ($subtask.Annotation|@count > 0)}<span class="ncomments">{$subtask.Annotation|@count}</span>{/if}
+                   
+                   {$subtask.Category.0.name|default:''} <!-- {$subtask.ticket_status|default:''} -->
+                   
+                   {if ($subtask.Annotation|@count > 0)}<span class="ncomments">{$subtask.Annotation|@count}</span>{/if}
+                   
                    <div class="info_ticket">
+                    <form action="{$html->url('/tickets/save')}" method="post" name="updateForm" id="updateForm" class="cmxform">
+
+                    <!-- 
+                        TODO salvataggio Ajax del subticket. Salvare
+                        _status
+                        _exp_resolution_date
+                        _start_date
+                        _categoria
+                        _assegnatari
+                    -->
+
+                    <input type="hidden" name="data[id]" value="{$subtask.id|default:''}"/>
                         <table>
                             <tr><td colspan="2">title: {$subtask.title|default:'<i>no title</i>'}</td></tr>
-                            <tr><td colspan="2">category: {$subtask.Category.0.label|default:''}</td></tr>
-                            <tr><td colspan="2">status: {$subtask.ticket_status|default:''}</td></tr>
+                            
+                            <tr>
+                                <td colspan="2">
+                                category: 
+                                {foreach from=$subtask.Category item=cat}
+                                <br /><input type='checkbox' name='data[Category][{$cat.id}]' value="{$cat.id}" checked=checked /> {$cat.label}
+                                {/foreach}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>status:</td>
+                                <td>
+                                    <select name="data[status]">
+                                    {foreach item=sta key='key' from=$conf->ticketStatus}
+                                        <option value="{$key}" {if $subtask.ticket_status==$key}selected{/if}>{$key}</option>
+                                    {/foreach}
+                                    </select>
+                                </td>
+                            </tr>
                             {if !empty($subtask.User)}
                                 <tr><td colspan="2">
                                     {foreach from=$subtask.User item=user}
@@ -222,7 +269,8 @@
                                 <tr><td>delay:</td><td>{$subtask.delay|default:''} days</td></tr>
                             {/if}
                         </table>
-
+                        <input type="submit" value="{t}save{/t}" />
+                    </form>
                         <a style="margin-top:10px" class="BEbutton" href="{$html->url('/')}view/{$subtask.id}">more details</a>
                    </div>
                 </div>
@@ -232,7 +280,9 @@
 {/if}
 
 {/foreach}  	
-</div>
+</div> <!-- closing pubb -->
+</div> <!-- closing matrix -->
+</div> <!-- closing timeline -->
 
-</div>
+
 {*dump var=$tickets|default:''*}
