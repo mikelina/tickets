@@ -2,11 +2,11 @@
 <div id="ticketfilter">
 	<form id="formFilter" action="{$beurl->getUrl(['page', 'dim', 'dir', 'order'])}" method="post">
 		<input type="hidden" name="cleanFilter" value=""/>
-		<table class="filters" style="width:100%">
+		<table class="filters">
 			{if !empty($view->SessionFilter)}
 			<tr>
 				<th><label>{t}categories{/t}:</label></th>
-				<td colspan="100">
+				<td>
 					<select name="filter[category]">
 						<option value="">{t}all{/t}</option>
 						{foreach $categories as $catId => $catLabel}
@@ -18,10 +18,8 @@
 						{/foreach}
 					</select>
 				</td>
-			</tr>
-			<tr>
 				<th><label>{t}on position{/t}:</label></th>
-				<td>
+				<td colspan="4">
 					<select name="filter[parent_id]" id="parent_id" class="areaSectionAssociation">
 					{$beTree->option($tree, $view->SessionFilter->read('parent_id'))}
 					</select>
@@ -32,22 +30,12 @@
 				</td>
 			</tr>
 			{/if}
-			<tr>			
-			
+			<tr style="border-top:1px solid gray">
 				<th>
 					<label>{t}status:{/t}</label>
 				</th>
-				<td colspan="100">
-					<style scoped>
-						.ticket-status {
-							width: 100%;
-						}
-						.ticket-status span{
-							width: 100px;
-							display: inline-block;
-						}
-					</style>
-					<table class="ticket-status">
+				<td colspan="5">
+					<table style="width:100%">
 						<tr>
 							<td style="vertical-align: top">
 						{assign var="prevsta" value="draft"}
@@ -56,23 +44,27 @@
 								</td>
 								<td style="vertical-align: top">
 							{/if}
-							<span>{t}{$key}{/t}:</span>
-							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if (empty($filter.f_status) && $sta != "off") || !empty($filter.f_status[$key])}checked="checked"{/if}/><br>
+							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if (empty($filter.f_status) && $sta != "off") || !empty($filter.f_status[$key])}checked="checked"{/if}/>
+							<span>{t}{$key}{/t}:</span><br />
 							{$prevsta=$sta}	
 						{/foreach}
 						</tr>
 					</table>
+					
+
 				</td>
 			</tr>
 			<tr>
-				<th><label>{t}hide closed tickets{/t}: </label></th>
-				<td>				
+				<th></th>
+				<td colspan="5">
+					&nbsp;			
 					{assign var="hide_off" value=$filter.hide_status_off|default:'false'}
 					<input type="checkbox" name="data[hide_status_off]" id="filterHideClosed" 
-					{if ($hide_off == 'true')}checked="checked"{/if} style="vertical-align: bottom;"/>
+					{if ($hide_off == 'true')}checked="checked"{/if} />&nbsp;
+					<label>{t}hide closed tickets{/t}: </label>
 				</td>
 			</tr>
-			<tr>
+			<tr style="border-top:1px solid gray">
 				<th><label>{t}reporter{/t}:</label></th>
 				<td>
 					<select name="data[reporter]" class="filterTicket">
@@ -82,8 +74,6 @@
 						{/foreach}
 					</select>
 				</td>
-			</tr>
-			<tr>
 				<th><label>{t}assigned to{/t}:</label></th>
 				<td>
 					<select name="data[assigned_to]" class="filterTicket">
@@ -93,8 +83,6 @@
 						{/foreach}
 					</select>
 				</td>
-			</tr>
-			<tr>
 				<th><label>{t}severity{/t}:</label></th>
 				<td>
 					<select name="data[severity]" id="ticketSev" class="filterTicket">
@@ -105,9 +93,9 @@
 					</select>
 				</td>
 			</tr>
-			<tr>
+			<tr style="border-top:1px solid gray">
 				<th></th>
-				<td colspan="10">
+				<td colspan="10" style="padding-top:10px">
 					<input type="submit" id="searchButton" style="width:150px" value=" {t}find it{/t} ">
 					<input type="button" id="cleanFilters" value=" {t}reset filters{/t} ">
 				</td>

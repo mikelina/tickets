@@ -3,12 +3,12 @@
 <style scoped>
 
     .timeline {
-        overflow: hidden;
+        /*width:90%;*/
+        overflow-x: auto;
     }
 
     .timeline header {
-        background-image: 
-        linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+        background-image: linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
         background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
     }
 
@@ -203,10 +203,15 @@
             <div class="thead"><span class="plusminus">+</span><a href="{$html->url('/')}view/{$ticket.id}">{$ticket.title}</a></div>
             
             {foreach from=$ticket.subtasks|default:[] item=subtask}
-            {$assigned = array()}
+            {if !empty($subtask.start_date) && !empty($subtask.exp_resolution_date)}
+                
+                {$assigned = array()}
             
                 <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.ticket_status}" 
-                style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px; border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,.5)">
+                style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px; 
+                {if !empty($subtask.delay)}
+                    border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,.5)
+                {/if}">
                    
                    {$subtask.Category.0.name|default:''} <!-- {$subtask.ticket_status|default:''} -->
                    
@@ -261,12 +266,11 @@
                                 <tr><td colspan="2">{$user.ObjectUser.switch}: {$user.realname}</td></tr>
                                 {/foreach}
                             {/if}
-                            {if !empty($subtask.start_date)}<tr><td>start on:</td><td class="tcal">{$subtask.start_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
-                            {if !empty($subtask.exp_resolution_date)}<tr><td>dued on:</td><td class="tcal">{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
+                           <tr><td>start on:</td><td class="tcal">{$subtask.start_date|date_format:'%a %d %b %Y'}</td></tr>
+                           <tr><td>dued on:</td><td class="tcal">{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</td></tr>
                             {if !empty($subtask.closed_date)}<tr><td>closed on:</td><td class="tcal">{$subtask.closed_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
-                            
-                            {if $subtask.delay > 0}
-                                <tr><td>delay:</td><td>{$subtask.delay|default:''} days</td></tr>
+                            {if !empty($subtask.delay)}
+                                <tr><td>delay:</td><td>{$subtask.delay} days</td></tr>
                             {/if}
                         </table>
                         <input type="submit" value="{t}save{/t}" />
@@ -274,7 +278,7 @@
                         <a style="margin-top:10px" class="BEbutton" href="{$html->url('/')}view/{$subtask.id}">more details</a>
                    </div>
                 </div>
-           
+            {/if}
             {/foreach} 
         </div>
 {/if}

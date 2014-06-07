@@ -98,9 +98,10 @@ class TicketsController extends ModulesController {
         } else {
             $startDay = date("Y-m-d");
         }
+		$startTime = $startDay . " 00:00:00";
+		$this->set("startTime", $startTime);
+
 		$timeline_start = strtotime($startDay);
-
-
 		$objects = array();
 		$name = "tickets";
 /*
@@ -130,15 +131,18 @@ class TicketsController extends ModulesController {
 
 		//day from first monday before ...
 		$prevmonday = strtotime('last monday',$timeline_start);
-        $mondayshift = ($timeline_start-$prevmonday)/86400;
+        $mondayshift = floor(($timeline_start-$prevmonday)/86400);
 
         //where is today?
-       	$todayshift = (strtotime('today')-$prevmonday)/86400;
+        $today = strtotime('today'); 
+       	$todayshift = floor(($today-$prevmonday)/86400);
 
 		foreach ($tickets as &$obj) {
 			//per ogni tiket prende i dettagli dei subtask (...)
 			foreach ($obj['RelatedObject'] as $r) {
 				if($r['switch'] == 'subtask') {	
+					$delay = 0;
+					
 					$detail = $this->Ticket->find('first', array(
 					    'conditions' => array('Ticket.id' => $r['object_id'])
 					));
@@ -154,13 +158,23 @@ class TicketsController extends ModulesController {
 					}
 
 					$interval = $end_date-$start_date; 
-					$delay = $closed_date-$exp_resolution_date;
-					$shift = ($start_date-$timeline_start)/86400;
+					
+					//counting delay
+					if (!empty($exp_resolution_date)) {
+						if(!empty($closed_date)) {
+							$delay = $closed_date-$exp_resolution_date;
+						} 
+						elseif($exp_resolution_date < $today) {
+							$delay = $today-$exp_resolution_date;
+						}
+					}
 
-					$detail["days"] = $interval/86400; //width in days of the ticket
+					$detail["delay"] = floor($delay/86400); //delay in days
+					
+					$shift = floor(($start_date-$timeline_start)/86400);
+
+					$detail["days"] = floor($interval/86400); //width in days of the ticket
 					$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
-					$detail["delay"] = $delay/86400; //delay in days
-
 					$obj["subtasks"][] = $detail;
 				}
 			}

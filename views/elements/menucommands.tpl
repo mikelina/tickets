@@ -20,7 +20,7 @@ Left column menu.
 		<form id="calendar_from" style="padding:10px" name="calendar_from" method="get">
 			<label>{t}start from{/t}:</label> 
 			<fieldset style="line-height:2.5em; margin:10px 0 10px 0;  padding-bottom:0px; display:block">
-				{$time=$start|default:$smarty.now|date_format:'%s'}
+				{$time=$startTime|default:$smarty.now|date_format:'%s'}
 				{html_select_date field_order="DMY" field_separator="<br />" time=$time start_year="-3" end_year="+1" display_days=true}
 			</fieldset>
 			<input type="submit" style="width:100%" value="{t}go{/t}">
