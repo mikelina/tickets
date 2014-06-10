@@ -54,6 +54,7 @@
         color:white !important;
         padding-left:5px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
+        box-sizing:content-box;
     }
 
     .flowticket.analysis { background-color: #cc6666 }
@@ -208,9 +209,9 @@
                 {$assigned = array()}
             
                 <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.ticket_status}" 
-                style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px; 
+                style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px !important; 
                 {if !empty($subtask.delay)}
-                    border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,.5)
+                    border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,1)
                 {/if}">
                    
                    {$subtask.Category.0.name|default:''} <!-- {$subtask.ticket_status|default:''} -->
@@ -268,6 +269,7 @@
                             {/if}
                            <tr><td>start on:</td><td class="tcal">{$subtask.start_date|date_format:'%a %d %b %Y'}</td></tr>
                            <tr><td>dued on:</td><td class="tcal">{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</td></tr>
+                            <tr><td>duration:</td><td>{$subtask.days} days</td></tr>
                             {if !empty($subtask.closed_date)}<tr><td>closed on:</td><td class="tcal">{$subtask.closed_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
                             {if !empty($subtask.delay)}
                                 <tr><td>delay:</td><td>{$subtask.delay} days</td></tr>

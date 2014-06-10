@@ -141,41 +141,43 @@ class TicketsController extends ModulesController {
 			//per ogni tiket prende i dettagli dei subtask (...)
 			foreach ($obj['RelatedObject'] as $r) {
 				if($r['switch'] == 'subtask') {	
-					$delay = 0;
+					$delay = '';
 					
 					$detail = $this->Ticket->find('first', array(
 					    'conditions' => array('Ticket.id' => $r['object_id'])
 					));
 					//duration in days of the ticket
-					$start_date = strtotime($detail["start_date"]);
-					$closed_date = strtotime($detail["closed_date"]);
-					$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
-					
-					if (!empty($detail["closed_date"])) {
-						$end_date = $closed_date;
-					} else {
-						$end_date = $exp_resolution_date;
-					}
+					if (!empty($detail["start_date"])) {
 
-					$interval = $end_date-$start_date; 
-					
-					//counting delay
-					if (!empty($exp_resolution_date)) {
-						if(!empty($closed_date)) {
-							$delay = $closed_date-$exp_resolution_date;
-						} 
-						elseif($exp_resolution_date < $today) {
-							$delay = $today-$exp_resolution_date;
+						$start_date = strtotime($detail["start_date"]);
+						$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
+
+						if (!empty($detail["closed_date"])) {
+							$closed_date = strtotime($detail["closed_date"]);
+							$end_date = $closed_date;
+						} else {
+							$end_date = $exp_resolution_date;
 						}
+
+						$interval = $end_date-$start_date; 
+						//counting delay
+						if (!empty($exp_resolution_date)) {
+							if (empty($detail["closed_date"])) {
+								$delay = $today-$exp_resolution_date;
+							} else {
+								$delay = $closed_date-$exp_resolution_date;
+							}
+						}
+						if(!empty($delay)) {
+							$detail["delay"] = floor($delay/86400); //delay in days
+						}
+
+						$shift = floor(($start_date-$timeline_start)/86400);
+
+						$detail["days"] = floor($interval/86400); //width in days of the ticket
+						$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
+						$obj["subtasks"][] = $detail;
 					}
-
-					$detail["delay"] = floor($delay/86400); //delay in days
-					
-					$shift = floor(($start_date-$timeline_start)/86400);
-
-					$detail["days"] = floor($interval/86400); //width in days of the ticket
-					$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
-					$obj["subtasks"][] = $detail;
 				}
 			}
 		}
