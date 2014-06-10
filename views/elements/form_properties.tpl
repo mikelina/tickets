@@ -33,8 +33,8 @@
 			<th>{t}scheduled from{/t}:</th>
 			<td colspan="4">
 				<input size="10" type="text" style="vertical-align:middle"
-				name="data[start_date]" id="start"
-				value="{$object.start_date|default:''}" />
+				class="dateinput" name="data[start_date]" id="startDate"
+				value="{if !empty($object.start_date)}{$object.start_date|date_format:$conf->datePattern}{/if}" />
 			</td>
 		</tr>
 		<tr>

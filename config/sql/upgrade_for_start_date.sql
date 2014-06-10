@@ -1,0 +1,1 @@
+ALTER TABLE `tickets`  ADD `start_date` DATETIME NULL DEFAULT NULL  AFTER `ticket_status`;
