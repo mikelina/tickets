@@ -117,7 +117,7 @@
     }
 
     .matrix .mainticket.closed .flowticket * {
-        display:none;
+        display:none !important;
     }
 
     .info_ticket {
@@ -129,7 +129,22 @@
         padding:10px;
         z-index: 900;
         margin-left: 0px;
-        margin-top: {$coeff}px;
+        margin-top: {$coeff+5}px;
+    }
+
+    .info_ticket td:first-child {
+        padding-left: 0px;
+    }
+
+    .info_ticket:before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        bottom: 100%;
+        left: 10px;
+        border-bottom: solid 5px #444;
+        border-left: solid 5px transparent;
+        border-right: solid 5px transparent;
     }
 
     .flowticket .ncomments {
@@ -186,42 +201,67 @@
 
 <script>
     $(function(){
+        var movingTicket = false;
 
-        $( ".flowticket" ).hover(
-            function(e) {
+        var updateDates = function(t, ui) {
+            var pos = ui.position.left;
+            var dayToTime = 1000 * 60 * 60 * 24;
+            var dif = dayToTime * pos / {$coeff};
+            var startDate = new Date($(t).data('start')).valueOf();
+            var endDate = startDate + dayToTime * $(t).width() / {$coeff};
+            startDate += dif;
+            endDate += dif;
+            var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
+            var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
+            $('.info_ticket .start_date', t).text(formattedStart);
+            $('.info_ticket .end_date', t).text(formattedEnd);
+            $('[name="data[start_date]"]', t).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
+            $('[name="data[exp_resolution_date]"]', t).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
+        }
+
+
+        $( ".flowticket" ).click(function(ev) {
                 var that = this;
-                var t = setTimeout(function() {
-                    $(".info_ticket", that).fadeIn( 100 );
-                }, 500);
-                $(this).data('timeout', t);
-            }, function() {
-                clearTimeout($(this).data('timeout'));
-                $(".info_ticket", this).fadeOut( 100 );
-            }
-        ).draggable({
+                if (!movingTicket) {
+                    var info = $(".info_ticket", that);
+                    $(".info_ticket").not(info).fadeOut( 100 );
+                    if (!info.is(':visible')) {
+                        info.css({
+                            left: ev.pageX - $(that).offset().left - 15
+                        })
+                    }
+                    info.fadeToggle( 150 );
+                }
+        }).not('.off').draggable({
             axis: "x",
             cursor: "move",
             grid: [ {$coeff}, {$coeff} ],
+            start: function() {
+                movingTicket = true;
+            },
             drag: function(event, ui) {
-                $(".info_ticket", this).show();
-                var pos = ui.position.left;
-                var dif = 1000 * 60 * 60 * 24 * pos / {$coeff};
-                var startDate = new Date($(this).data('start')).valueOf();
-                var endDate = new Date($(this).data('end')).valueOf();
-                startDate += dif;
-                endDate += dif;
-                var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
-                var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
-                $('.info_ticket .start_date', this).text(formattedStart);
-                $('.info_ticket .end_date', this).text(formattedEnd);
-                $('[name="data[start_date]"]', this).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
-                $('[name="data[exp_resolution_date]"]', this).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
+                movingTicket = true;
+                updateDates(this, ui);
+            },
+            stop: function() {
+                setTimeout(function() {
+                    movingTicket = false;
+                }, 100)
             }
         }).resizable({
             handles: "e, w",
+            start: function() {
+                movingTicket = true;
+            },
             grid: [ {$coeff}, {$coeff} ],
-            resize: function() {
-                $(".info_ticket", this).show();
+            resize: function(event, ui) {
+                movingTicket = true;
+                updateDates(this, ui);
+            },
+            stop: function() {
+                setTimeout(function() {
+                    movingTicket = false;
+                }, 100)
             }
         });
 
@@ -265,7 +305,7 @@
                 
                 {$assigned = array()}
             
-                <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.ticket_status}" 
+                <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.status} {$subtask.ticket_status}" 
                 style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px !important; 
                 {if !empty($subtask.delay)}
                     border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,1)
