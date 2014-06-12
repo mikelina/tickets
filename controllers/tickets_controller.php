@@ -154,16 +154,16 @@ class TicketsController extends ModulesController {
 
 						if (!empty($detail["closed_date"])) {
 							$closed_date = strtotime($detail["closed_date"]);
-							$end_date = $closed_date;
-						} else {
-							$end_date = $exp_resolution_date;
-						}
+						} 
 
-						$interval = $end_date-$start_date; 
+						$interval = $exp_resolution_date-$start_date; 
+
 						//counting delay
 						if (!empty($exp_resolution_date)) {
 							if (empty($detail["closed_date"])) {
-								$delay = $today-$exp_resolution_date;
+								if($today > $exp_resolution_date) {
+									$delay = $today-$exp_resolution_date;
+								}
 							} else {
 								$delay = $closed_date-$exp_resolution_date;
 							}

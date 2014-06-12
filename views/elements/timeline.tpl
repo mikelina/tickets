@@ -1,277 +1,5 @@
 {$coeff=20}
 {$html->script('/tickets/js/moment-with-langs.min')}
-<style scoped>
-
-    .timeline {
-        padding-bottom: 350px;
-        overflow-x: hidden;
-    }
-
-    .timeline header {
-        background-image: linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
-        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
-    }
-
-    .matrix {
-        background-color:rgba(255,255,255,0);
-        background-image: linear-gradient(white 0px, transparent 0px),
-        linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px),
-        linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px),
-        linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
-        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
-        background-position: -{$coeff*2}px;
-    }
-
-    .matrix .mainticket {
-        margin-bottom:{$coeff}px; 
-        width:100%;
-    }
-
-    .matrix .mainticket .thead {
-        background-color:rgba(255,255,255,1); 
-        display:block; 
-        height:{$coeff}px;
-        padding-left:5px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        position:relative;
-        z-index:800
-     }
-
-    .matrix .mainticket .thead .plusminus {
-        display: inline-block;
-        text-align: right;
-        padding-left: 0px;
-        padding-right: 10px;
-        cursor: pointer;
-    }
-
-    .flowticket {
-        margin-top:0px;
-        background-color:pink; 
-        font-weight: normal;
-        height:{$coeff}px;
-        max-height:{$coeff}px;
-        min-height:{$coeff}px;
-        opacity:1;
-        font-size:12px;
-        color:white !important;
-        text-indent:5px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
-        position: relative !important;
-        top: 0 !important;
-        box-sizing:content-box;
-    }
-
-    .flowticket .ui-resizable-e {
-        height:{$coeff}px;
-        max-height:{$coeff}px;
-        min-height:{$coeff}px;
-        width: 10px;
-        position: absolute;
-        right: 0;
-        top: 0;
-        cursor: e-resize;
-    }
-
-    .flowticket .ui-resizable-w {
-        height:{$coeff}px;
-        max-height:{$coeff}px;
-        min-height:{$coeff}px;
-        width: 10px;
-        position: absolute;
-        left: 0;
-        top: 0;
-        cursor: w-resize;
-    }
-
-    .flowticket.analysis { background-color: #cc6666 }
-    .flowticket.tagging  { background-color: #ff9900 }
-    .flowticket.editing { background-color: #99cc66 }
-    .flowticket.checking  { background-color: #6e9bed }
-    .flowticket.revision  { background-color: #3d82c7 }
-    .flowticket.release  { background-color: #073564 }
-
-    .flowticket.resolved  { }
-/*
-.flowticket.overdelayed  {
-    background: 
-    linear-gradient(135deg, red 25%, transparent 25%) -50px 0,
-    linear-gradient(225deg, red 25%, transparent 25%) -50px 0,
-    linear-gradient(315deg, red 25%, transparent 25%),
-    linear-gradient(45deg, red 25%, transparent 25%);   
-    background-size: 20px 20px;
-}
-*/
-    .matrix .mainticket.closed  {
-        margin-bottom:0px;
-    }
-
-    .matrix .mainticket.closed .thead {
-        margin-bottom:{$coeff}px;
-    }
-
-    .matrix .mainticket.closed .flowticket {
-        margin-top:-{$coeff}px;
-        opacity:.5;
-        color:transparent !important;
-    }
-
-    .matrix .mainticket.closed .flowticket * {
-        display:none !important;
-    }
-
-    .info_ticket {
-        display:none;
-        width:200px;
-        color:#FFF;
-        background-color: #444;
-        position:absolute;
-        padding:10px;
-        z-index: 900;
-        margin-left: 0px;
-        margin-top: {$coeff+5}px;
-    }
-
-    .info_ticket td:first-child {
-        padding-left: 0px;
-    }
-
-    .info_ticket:before {
-        content: '';
-        display: inline-block;
-        position: absolute;
-        bottom: 100%;
-        left: 10px;
-        border-bottom: solid 5px #444;
-        border-left: solid 5px transparent;
-        border-right: solid 5px transparent;
-    }
-
-    .flowticket .ncomments {
-        display: inline-block;
-        width:16px;
-        height:16px;
-        line-height: 16px;
-        font-size: 11px;
-        background-color: black;
-        border-radius: 100%;
-        text-align: center;
-        margin:0px 0px 0px 4px;
-    }
-
-    .info_ticket .profile {
-        width:50px;
-        height:50px;
-        border-radius: 100%;
-        background-color: #666;
-        font-size: 24px;
-        text-align: center;
-        line-height: 0;
-        padding-top:24px;
-        display: inline-block;
-        margin: 5px 5px 5px 0px
-    }
-
-    .info_ticket TR {
-        white-space: nowrap;
-        border-top:1px solid rgba(255,255,255,.1);
-        padding:2px; 
-        margin:2px;
-    }
-
-     .info_ticket TR:first-child {
-        border:0px;
-     }
-
-     TD.tcal {
-        text-align: right;
-     }
-
-     .today {
-        color:red;
-        position:absolute;
-        margin-top:-27px;
-        padding-top:20px;
-        height:100%;
-        padding-left:5px;
-        border-left:1px solid rgba(255,0,0,1);
-        margin-left:{$todayshift*$coeff}px;
-     }
-</style>
-
-<script>
-    $(function(){
-        var movingTicket = false;
-
-        var updateDates = function(t, ui) {
-            var pos = ui.position.left;
-            var dayToTime = 1000 * 60 * 60 * 24;
-            var dif = dayToTime * pos / {$coeff};
-            var startDate = new Date($(t).data('start')).valueOf();
-            var endDate = startDate + dayToTime * $(t).width() / {$coeff};
-            startDate += dif;
-            endDate += dif;
-            var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
-            var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
-            $('.info_ticket .start_date', t).text(formattedStart);
-            $('.info_ticket .end_date', t).text(formattedEnd);
-            $('[name="data[start_date]"]', t).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
-            $('[name="data[exp_resolution_date]"]', t).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
-        }
-
-
-        $( ".flowticket" ).click(function(ev) {
-                var that = this;
-                if (!movingTicket) {
-                    var info = $(".info_ticket", that);
-                    $(".info_ticket").not(info).fadeOut( 100 );
-                    if (!info.is(':visible')) {
-                        info.css({
-                            left: ev.pageX - $(that).offset().left - 15
-                        })
-                    }
-                    info.fadeToggle( 150 );
-                }
-        }).not('.off').draggable({
-            axis: "x",
-            cursor: "move",
-            grid: [ {$coeff}, {$coeff} ],
-            start: function() {
-                movingTicket = true;
-            },
-            drag: function(event, ui) {
-                movingTicket = true;
-                updateDates(this, ui);
-            },
-            stop: function() {
-                setTimeout(function() {
-                    movingTicket = false;
-                }, 100)
-            }
-        }).resizable({
-            handles: "e, w",
-            start: function() {
-                movingTicket = true;
-            },
-            grid: [ {$coeff}, {$coeff} ],
-            resize: function(event, ui) {
-                movingTicket = true;
-                updateDates(this, ui);
-            },
-            stop: function() {
-                setTimeout(function() {
-                    movingTicket = false;
-                }, 100)
-            }
-        });
-
-        $(".thead").click(function(){
-            $(this).closest(".mainticket").toggleClass("closed");
-        });
-
-    });
-</script>
-
 <div class="timeline">
 
 <header style="padding-bottom:20px;">
@@ -314,7 +42,7 @@
                 data-end="{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}"
                 >
                    
-                   {$subtask.Category.0.name|default:''} <!-- {$subtask.ticket_status|default:''} -->
+                   {$subtask.Category.0.name|default:''} {$subtask.ticket_status|default:''} {$subtask.title|default:''}
                    
                    {if ($subtask.Annotation|@count > 0)}<span class="ncomments">{$subtask.Annotation|@count}</span>{/if}
                    
@@ -404,6 +132,110 @@
 </div> <!-- closing pubb -->
 </div> <!-- closing matrix -->
 </div> <!-- closing timeline -->
+
+<style scoped>
+
+    .timeline header {
+        background-image: linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
+    }
+
+    .matrix {
+        background-color:rgba(255,255,255,0);
+        background-image: linear-gradient(white 0px, transparent 0px),
+        linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px),
+        linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+        background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;
+        background-position: -{$coeff*2}px;
+    }
+
+
+     .today {
+        color:red;
+        position:absolute;
+        margin-top:-27px;
+        padding-top:20px;
+        height:100%;
+        padding-left:5px;
+        border-left:1px solid rgba(255,0,0,1);
+        margin-left:{$todayshift*$coeff}px;
+     }
+
+</style>
+
+<script>
+    $(function(){
+        var movingTicket = false;
+
+        var updateDates = function(t, ui) {
+            var pos = ui.position.left;
+            var dayToTime = 1000 * 60 * 60 * 24;
+            var dif = dayToTime * pos / {$coeff};
+            var startDate = new Date($(t).data('start')).valueOf();
+            var endDate = startDate + dayToTime * $(t).width() / {$coeff};
+            startDate += dif;
+            endDate += dif;
+            var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
+            var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
+            $('.info_ticket .start_date', t).text(formattedStart);
+            $('.info_ticket .end_date', t).text(formattedEnd);
+            $('[name="data[start_date]"]', t).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
+            $('[name="data[exp_resolution_date]"]', t).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
+        }
+
+
+        $( ".flowticket" ).click(function(ev) {
+                var that = this;
+                if (!movingTicket) {
+                    var info = $(".info_ticket", that);
+                    $(".info_ticket").not(info).fadeOut( 100 );
+                    if (!info.is(':visible')) {
+                        info.css({
+                            left: ev.pageX - $(that).offset().left - 15
+                        })
+                    }
+                    info.fadeToggle( 150 );
+                }
+        }).not('.off').draggable({
+            axis: "x",
+            cursor: "move",
+            grid: [ {$coeff}, {$coeff} ],
+            start: function() {
+                movingTicket = true;
+            },
+            drag: function(event, ui) {
+                movingTicket = true;
+                updateDates(this, ui);
+            },
+            stop: function() {
+                setTimeout(function() {
+                    movingTicket = false;
+                }, 100)
+            }
+        }).resizable({
+            handles: "e, w",
+            start: function() {
+                movingTicket = true;
+            },
+            grid: [ {$coeff}, {$coeff} ],
+            resize: function(event, ui) {
+                movingTicket = true;
+                updateDates(this, ui);
+            },
+            stop: function() {
+                setTimeout(function() {
+                    movingTicket = false;
+                }, 100)
+            }
+        });
+
+        $(".thead").click(function(){
+            $(this).closest(".mainticket").toggleClass("closed");
+        });
+
+    });
+</script>
 
 
 {*dump var=$tickets|default:''*}
