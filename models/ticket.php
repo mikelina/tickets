@@ -58,6 +58,7 @@ class Ticket extends BEAppObjectModel {
 
 	function beforeValidate() {
         $this->checkDate('exp_resolution_date');
+         $this->checkDate('start_date');
 	}
 
 	function beforeSave() {
