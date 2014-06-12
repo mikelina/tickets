@@ -1,10 +1,10 @@
 {$coeff=20}
-
+{$html->script('/tickets/js/moment-with-langs.min')}
 <style scoped>
 
     .timeline {
-        /*width:90%;*/
-        overflow-x: auto;
+        padding-bottom: 350px;
+        overflow-x: hidden;
     }
 
     .timeline header {
@@ -23,7 +23,8 @@
     }
 
     .matrix .mainticket {
-        margin-bottom:{$coeff}px; width:100%
+        margin-bottom:{$coeff}px; 
+        width:100%;
     }
 
     .matrix .mainticket .thead {
@@ -49,11 +50,37 @@
         background-color:pink; 
         font-weight: normal;
         height:{$coeff}px;
+        max-height:{$coeff}px;
+        min-height:{$coeff}px;
         opacity:1;
         font-size:12px;
         color:white !important;
-        padding-left:5px;
+        text-indent:5px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
+        position: relative !important;
+        top: 0 !important;
+    }
+
+    .flowticket .ui-resizable-e {
+        height:{$coeff}px;
+        max-height:{$coeff}px;
+        min-height:{$coeff}px;
+        width: 10px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        cursor: e-resize;
+    }
+
+    .flowticket .ui-resizable-w {
+        height:{$coeff}px;
+        max-height:{$coeff}px;
+        min-height:{$coeff}px;
+        width: 10px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        cursor: w-resize;
     }
 
     .flowticket.analysis { background-color: #cc6666 }
@@ -100,8 +127,8 @@
         position:absolute;
         padding:10px;
         z-index: 900;
-        margin-left: -5px;
-        margin-top: 2px;
+        margin-left: 0px;
+        margin-top: {$coeff}px;
     }
 
     .flowticket .ncomments {
@@ -160,12 +187,42 @@
     $(function(){
 
         $( ".flowticket" ).hover(
-          function(e) {
-             $(".info_ticket",this ).fadeIn( 100 );
-          }, function() {
-            $(".info_ticket",this ).fadeOut( 100 );
-          }
-        );
+            function(e) {
+                var that = this;
+                var t = setTimeout(function() {
+                    $(".info_ticket", that).fadeIn( 100 );
+                }, 500);
+                $(this).data('timeout', t);
+            }, function() {
+                clearTimeout($(this).data('timeout'));
+                $(".info_ticket", this).fadeOut( 100 );
+            }
+        ).draggable({
+            axis: "x",
+            cursor: "move",
+            grid: [ {$coeff}, {$coeff} ],
+            drag: function(event, ui) {
+                $(".info_ticket", this).show();
+                var pos = ui.position.left;
+                var dif = 1000 * 60 * 60 * 24 * pos / {$coeff};
+                var startDate = new Date($(this).data('start')).valueOf();
+                var endDate = new Date($(this).data('end')).valueOf();
+                startDate += dif;
+                endDate += dif;
+                var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
+                var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
+                $('.info_ticket .start_date', this).text(formattedStart);
+                $('.info_ticket .end_date', this).text(formattedEnd);
+                $('[name="data[start_date]"]', this).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
+                $('[name="data[exp_resolution_date]"]', this).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
+            }
+        }).resizable({
+            handles: "e, w",
+            grid: [ {$coeff}, {$coeff} ],
+            resize: function() {
+                $(".info_ticket", this).show();
+            }
+        });
 
         $(".thead").click(function(){
             $(this).closest(".mainticket").toggleClass("closed");
@@ -211,7 +268,9 @@
                 style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px; 
                 {if !empty($subtask.delay)}
                     border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,.5)
-                {/if}">
+                {/if}"
+                data-start="{$subtask.start_date|date_format:'%a %d %b %Y'}"
+                data-end="{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}">
                    
                    {$subtask.Category.0.name|default:''} <!-- {$subtask.ticket_status|default:''} -->
                    
@@ -266,9 +325,24 @@
                                 <tr><td colspan="2">{$user.ObjectUser.switch}: {$user.realname}</td></tr>
                                 {/foreach}
                             {/if}
-                           <tr><td>start on:</td><td class="tcal">{$subtask.start_date|date_format:'%a %d %b %Y'}</td></tr>
-                           <tr><td>dued on:</td><td class="tcal">{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}</td></tr>
-                            {if !empty($subtask.closed_date)}<tr><td>closed on:</td><td class="tcal">{$subtask.closed_date|date_format:'%a %d %b %Y'}</td></tr>{/if}
+                            <tr>
+                                <td>start on:</td>
+                                <td class="tcal start_date">
+                                    {$subtask.start_date|date_format:'%a %d %b %Y'}
+                                    <input type="hidden" name="data[start_date]" value="{$subtask.start_date}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>dued on:</td>
+                                <td class="tcal end_date">
+                                    {$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}
+                                    <input type="hidden" name="data[exp_resolution_date]" value="{$subtask.exp_resolution_date}">
+                                </td>
+                            </tr>
+                            {if !empty($subtask.closed_date)}
+                            <tr>
+                                <td>closed on:</td><td class="tcal">{$subtask.closed_date|date_format:'%a %d %b %Y'}</td>
+                            </tr>{/if}
                             {if !empty($subtask.delay)}
                                 <tr><td>delay:</td><td>{$subtask.delay} days</td></tr>
                             {/if}
