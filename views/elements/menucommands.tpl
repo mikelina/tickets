@@ -2,6 +2,7 @@
 Left column menu.
 *}
 
+{$coeff=$html->params.named.coeff|default:$html->params.url.coeff|default:20}
 {$view->set("method", $method)}
 <div class="secondacolonna {if !empty($fixed)}fixed{/if}">
 	
@@ -20,13 +21,29 @@ Left column menu.
 		<form id="calendar_from" style="padding:10px" name="calendar_from" method="get">
 			<label>{t}start from{/t}:</label> 
 			<fieldset style="line-height:2.5em; margin:10px 0 10px 0;  padding-bottom:0px; display:block">
-				{$time=$startTime|default:$smarty.now|date_format:'%s'}
+				{$time=$prevmonday|date_format:'%s'}
 				{html_select_date field_order="DMY" field_separator="<br />" time=$time start_year="-3" end_year="+1" display_days=true}
 			</fieldset>
 			<input type="submit" style="width:100%" value="{t}go{/t}">
 		</form>
 
+		<div class="insidecol">
+			<a title="{$prevWeekMonday|date_format:'%x'}" href="{$html->url('/')}tickets/timeline?{$time|date_format:'Date_Day=%d&Date_Month=%m&Date_Year=%Y'}&coeff={$coeff}">{t}prev week{/t}</a>
+			<hr />
+			<a title="{$nextWeekMonday|date_format:'%x'}" href="{$html->url('/')}tickets/timeline?{$nextWeekMonday|date_format:'Date_Day=%d&Date_Month=%m&Date_Year=%Y'}&coeff={$coeff}">{t}next week{/t}</a>
+		</div>
 
+		<ul style="margin:20px" class="insidecol">
+			<li>
+				<a href="{$html->here}?{foreach from=$html->params.url item=item key=key}{if $key!='url' && $key!='coeff'}{$key}={$item}&{/if}{/foreach}coeff=10">10</a>
+			</li>
+			<li>
+				<a href="{$html->here}?{foreach from=$html->params.url item=item key=key}{if $key!='url' && $key!='coeff'}{$key}={$item}&{/if}{/foreach}coeff=20">20</a>
+			</li>
+			<li>
+				<a href="{$html->here}?{foreach from=$html->params.url item=item key=key}{if $key!='url' && $key!='coeff'}{$key}={$item}&{/if}{/foreach}coeff=50">50</a>
+			</li>
+		</ul>
 
 	{elseif !empty($method) && $method != "index" && $method != "categories"}
 

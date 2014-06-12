@@ -1,4 +1,5 @@
-{$coeff=20}
+{$coeff=$html->params.named.coeff|default:$html->params.url.coeff|default:20}
+
 {$html->script('/tickets/js/moment-with-langs.min')}
 <div class="timeline">
 

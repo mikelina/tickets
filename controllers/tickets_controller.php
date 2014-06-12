@@ -100,8 +100,8 @@ class TicketsController extends ModulesController {
         }
 		$startTime = $startDay . " 00:00:00";
 		$this->set("startTime", $startTime);
-
 		$timeline_start = strtotime($startDay);
+
 		$objects = array();
 		$name = "tickets";
 /*
@@ -131,6 +131,26 @@ class TicketsController extends ModulesController {
 
 		//day from first monday before ...
 		$prevmonday = strtotime('last monday',$timeline_start);
+		$prevWeekMonday = strtotime('last monday',$prevmonday);
+		$nextWeekMonday = strtotime('next monday',$timeline_start);
+
+
+
+		$this->set("prevmonday", $prevmonday);
+		$this->set("prevWeekMonday", $prevWeekMonday);
+		$this->set("nextWeekMonday", $nextWeekMonday);
+
+
+
+/*
+        $nextCalendarDay = date("Y-m-d", strtotime($startTime));
+        $prevCalendarDay = date("Y-m-d", strtotime($startTime));
+
+        $this->set("prevCalendarDay", $prevCalendarDay);
+        $this->set("nextCalendarDay", $nextCalendarDay);
+*/
+
+
         $mondayshift = floor(($timeline_start-$prevmonday)/86400);
 
         //where is today?
