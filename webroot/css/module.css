@@ -42,7 +42,6 @@ ul.users-relations li{
 
 .timeline {
     padding-bottom: 350px;
-    overflow-x: hidden;
 }
 
 .matrix .mainticket {
@@ -84,7 +83,7 @@ ul.users-relations li{
     top: 0 !important;
     box-sizing:content-box;
     white-space: nowrap;
-    
+
 }
 
 .flowticket .ui-resizable-e {
@@ -143,6 +142,13 @@ background-size: 20px 20px;
 
 .matrix .mainticket.closed .flowticket * {
     display:none !important;
+}
+
+.matrix .mainticket .thead .plusminus:before {
+    content:' - ';
+}
+.matrix .mainticket.closed .thead .plusminus:before {
+    content:' + ';
 }
 
 .info_ticket {
