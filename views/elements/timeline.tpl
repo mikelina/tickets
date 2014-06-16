@@ -187,17 +187,17 @@
 
 
         $( ".flowticket" ).click(function(ev) {
-                var that = this;
-                if (!movingTicket) {
-                    var info = $(".info_ticket", that);
-                    $(".info_ticket").not(info).fadeOut( 100 );
-                    if (!info.is(':visible')) {
-                        info.css({
-                            left: ev.pageX - $(that).offset().left - 15
-                        })
-                    }
-                    info.fadeToggle( 150 );
+            var that = this;
+            if (!movingTicket) {
+                var info = $(".info_ticket", that);
+                $(".info_ticket").not(info).fadeOut( 100 );
+                if (!info.is(':visible')) {
+                    info.css({
+                        left: ev.pageX - $(that).offset().left - 15
+                    })
                 }
+                info.fadeToggle( 150 );
+            }
         }).not('.off').draggable({
             axis: "x",
             cursor: "move",
