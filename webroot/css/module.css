@@ -108,6 +108,10 @@ ul.users-relations li{
     cursor: w-resize;
 }
 
+.flowticket input[type="text"] {
+    width: 100%;
+}
+
 .flowticket.analysis { background-color: #cc6666 }
 .flowticket.tagging  { background-color: #ff9900 }
 .flowticket.editing { background-color: #99cc66 }

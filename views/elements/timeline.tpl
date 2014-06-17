@@ -83,24 +83,64 @@
         var movingTicket = false;
 
         var updateDates = function(t, ui) {
-            var pos = ui.position.left;
+            var pos = ui ? ui.position.left : 0;
             var dayToTime = 1000 * 60 * 60 * 24;
             var dif = dayToTime * pos / {$coeff};
             var startDate = new Date($(t).data('start')).valueOf();
             var endDate = startDate + dayToTime * $(t).width() / {$coeff};
             startDate += dif;
             endDate += dif;
-            var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
-            var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
-            $('.info_ticket .start_date', t).text(formattedStart);
-            $('.info_ticket .end_date', t).text(formattedEnd);
-            $('[name="data[start_date]"]', t).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
-            $('[name="data[exp_resolution_date]"]', t).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
+            var startEl = $('[name="data[start_date]"]', t);
+            var endEl = $('[name="data[exp_resolution_date]"]', t);
+            startEl.datepicker('setDate', new Date(startDate) );
+            endEl.datepicker('setDate', new Date(endDate) );
         }
 
+        $('.dateinput').datepicker({
+            onSelect: function(ev, ui) {
+                var t = $(this).closest('.flowticket');
+                var startEl = t.find('[name="data[start_date]"]');
+                var endEl = t.find('[name="data[exp_resolution_date]"]');
+
+                var dayToTime = 1000 * 60 * 60 * 24;
+
+                var initDate = new Date(t.data('start')).valueOf();
+                var endDate = endEl.datepicker('getDate').valueOf();
+                var newStart = startEl.datepicker('getDate').valueOf();
+                var newEnd = endDate;
+
+                var d = new Date(ui.selectedYear + '/' + (ui.selectedMonth+1) + '/' + ui.selectedDay);
+                if ($(this).is('[name="data[start_date]"]')) {
+                    newStart = d.valueOf();
+                } else {
+                    newEnd = d.valueOf();
+                }
+
+                var left = {$coeff} * (newStart - initDate) / dayToTime;
+                var width = {$coeff} * (newEnd - newStart) / dayToTime;
+                t.css({
+                    left: left,
+                    width: width
+                });
+                
+                var start = startEl.data('date');
+            }
+        });
+
+        $(document).click(function(ev) {
+            if ($(ev.target).is('.info_ticket, .info_ticket *')) {
+                return true;
+            } else {
+                $(".info_ticket").fadeOut( 100 );
+            }
+        });
 
         $( ".flowticket" ).click(function(ev) {
+            ev.stopPropagation();
             var that = this;
+            if ($(ev.target).is('.info_ticket, .info_ticket *')) {
+                return true;
+            }
             if (!movingTicket) {
                 var info = $(".info_ticket", that);
                 $(".info_ticket").not(info).fadeOut( 100 );
@@ -111,6 +151,9 @@
                 }
                 info.fadeToggle( 150 );
             }
+            return false;
+        }).each(function() {
+            updateDates(this);
         }).not('.off').draggable({
             axis: "x",
             cursor: "move",

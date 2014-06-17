@@ -49,15 +49,13 @@
             <tr>
                 <td>start on:</td>
                 <td class="tcal start_date">
-                    {$subtask.start_date|date_format:'%a %d %b %Y'}
-                    <input type="hidden" name="data[start_date]" value="{$subtask.start_date}">
+                    <input type="text" class="dateinput" name="data[start_date]" value="{$subtask.start_date|date_format:$conf->datePattern|default:''}">
                 </td>
             </tr>
             <tr>
                 <td>dued on:</td>
                 <td class="tcal end_date">
-                    {$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}
-                    <input type="hidden" name="data[exp_resolution_date]" value="{$subtask.exp_resolution_date}">
+                    <input type="text" class="dateinput" name="data[exp_resolution_date]" value="{$subtask.exp_resolution_date|date_format:$conf->datePattern|default:''}">
                 </td>
             </tr>
             {if !empty($subtask.closed_date)}
