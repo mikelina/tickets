@@ -20,10 +20,10 @@
 
 {$view->element("toolbar")}
 
-<div class="mainfull">
+<div class="mainfull" style="right:0px">
 	<form method="post" action="" id="formObject">
 
-	{$view->element("filters")}
+	<div style="width:680px">{$view->element("filters")}</div>
 	
 	{$view->element("timeline")}
 

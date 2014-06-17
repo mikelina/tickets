@@ -40,6 +40,32 @@ ul.users-relations li{
 
 ...........................................*/
 
+    .timeline header {
+        padding-bottom:20px;
+        background-image: linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+        /*background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;*/
+    }
+
+    .matrix {
+        background-color:rgba(255,255,255,0);
+        /*background-image: linear-gradient(white 0px, transparent 0px),
+        linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px), linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);*/
+        /*background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;*/
+        /*background-position: -{$coeff*2}px;*/
+    }
+
+
+     .today {
+        color:red;
+        position:absolute;
+        margin-top:-27px;
+        padding-top:20px;
+        height:100%;
+        padding-left:5px;
+         /*border-left:{$coeff}px solid rgba(255,0,0,1);
+       margin-left:{$todayshift*$coeff}px;*/
+     }
+
 .timeline {
     padding-bottom: 350px;
 }

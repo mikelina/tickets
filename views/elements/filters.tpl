@@ -2,7 +2,7 @@
 <div id="ticketfilter">
 	<form id="formFilter" action="{$beurl->getUrl(['page', 'dim', 'dir', 'order'])}" method="post">
 		<input type="hidden" name="cleanFilter" value=""/>
-		<table class="filters" style="width: 100%">
+		<table class="filters">
 			{if !empty($view->SessionFilter)}
 			<tr>
 				<th><label>{t}categories{/t}:</label></th>

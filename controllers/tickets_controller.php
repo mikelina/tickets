@@ -99,57 +99,15 @@ class TicketsController extends ModulesController {
             $startDay = date("Y-m-d");
         }
 		$startTime = $startDay . " 00:00:00";
-		$this->set("startTime", $startTime);
 		$timeline_start = strtotime($startDay);
-
-		$objects = array();
-		$name = "tickets";
-/*
-		$query = 	"SELECT tickets.*, areas.public_name as publication_name, trees.area_id, object_relations.*".
-					"FROM tickets ".
-					"INNER join objects on objects.id = tickets.id ".
-					"LEFT JOIN trees ON tickets.id = trees.id ".
-					"LEFT JOIN areas ON areas.id = area_id ".
-					"INNER JOIN object_relations ON object_relations.id = tickets.id ".
-					"AND object_relations.switch = 'subtask' ".
-					"GROUP BY tickets.id ".
-					"ORDER BY publication_name desc";
-	    $tickets = $this->Ticket->query($query);
-*/
-
-
-        $tickets = $this->Ticket->find("all", array(
-                "conditions" => array(
-                // TODO
-                //solo tickets senza relazione 'subtask_of'
-                //exp_resolution_date oppure closed_date suoi o di tutti i suoi subtickets, maggiore o uguale ad una settimana prima della data passata (default oggi)
-                //raggruppati per pubblicazione
-                //coi filtri passati
-        		)
-        ));
-
-
-		//day from first monday before ...
 		$prevmonday = strtotime('last monday',$timeline_start);
 		$prevWeekMonday = strtotime('last monday',$prevmonday);
 		$nextWeekMonday = strtotime('next monday',$timeline_start);
 
-
-
+		$this->set("startTime", $startTime);
 		$this->set("prevmonday", $prevmonday);
 		$this->set("prevWeekMonday", $prevWeekMonday);
 		$this->set("nextWeekMonday", $nextWeekMonday);
-
-
-
-/*
-        $nextCalendarDay = date("Y-m-d", strtotime($startTime));
-        $prevCalendarDay = date("Y-m-d", strtotime($startTime));
-
-        $this->set("prevCalendarDay", $prevCalendarDay);
-        $this->set("nextCalendarDay", $nextCalendarDay);
-*/
-
 
         $mondayshift = floor(($timeline_start-$prevmonday)/86400);
 
@@ -157,56 +115,93 @@ class TicketsController extends ModulesController {
         $today = strtotime('today'); 
        	$todayshift = floor(($today-$prevmonday)/86400);
 
-		foreach ($tickets as &$obj) {
-			//per ogni tiket prende i dettagli dei subtask (...)
-			foreach ($obj['RelatedObject'] as $r) {
-				if($r['switch'] == 'subtask') {	
-					$delay = '';
-					
-					$detail = $this->Ticket->find('first', array(
-					    'conditions' => array('Ticket.id' => $r['object_id'])
-					));
-					//duration in days of the ticket
-					if (!empty($detail["start_date"])) {
+       	// so get all publications
+		$treeModel = ClassRegistry::init("Tree");
+		$user = $this->BeAuth->getUserSession();
+		$publications = $treeModel->getAllRoots($user['userid'], null, array('count_permission' => true));
 
-						$start_date = strtotime($detail["start_date"]);
-						$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
+		// for each pubb get root tickets
+		$pubtickets = array();
 
-						if (!empty($detail["closed_date"])) {
-							$closed_date = strtotime($detail["closed_date"]);
-						} 
+		foreach ($publications as $key => $value) {
+			$areaId = $value["id"];
+			$areaKey = $value["nickname"];
+			$areaTitle = $value["title"];
 
-						$interval = $exp_resolution_date-$start_date; 
-
-						//counting delay
-						if (!empty($exp_resolution_date)) {
-							if (empty($detail["closed_date"])) {
-								if($today > $exp_resolution_date) {
-									$delay = $today-$exp_resolution_date;
+			$this->Ticket->bindModel(array(
+			    'hasOne' => array(
+			        'Tree' => array(
+			            'foreignKey' => 'id'
+			         )
+			    )
+			));
+			$t = $this->Ticket->find('all', array(
+			    'conditions' => array(
+			        'object_type_id' => Configure::read('objectTypes.ticket.id'),
+			        'Tree.parent_id' => $areaId
+			    ),
+			    'contain' => array(
+			        'BEObject' => array(
+			            'ObjectType',
+			            'UserCreated',
+			            'UserModified',
+			            'ObjectProperty',
+			            'RelatedObject',
+			            'Annotation',
+			            'Category',
+			            'User',
+			            'Version' => array('User.realname', 'User.userid')
+			        ),
+			        'Tree'
+			    )
+			));
+			// for each root ticket  get subtask tickets details
+			foreach ($t as &$obj) {
+				$obj['publication_title'] = $areaTitle;
+				foreach ($obj['RelatedObject'] as $r) {
+					if($r['switch'] == 'subtask') {	
+						$delay = '';
+						$detail = $this->Ticket->find('first', array(
+						    'conditions' => array('Ticket.id' => $r['object_id'])
+						));
+						//duration in days of the ticket
+						if (!empty($detail["start_date"])) {
+							$start_date = strtotime($detail["start_date"]);
+							$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
+							if (!empty($detail["closed_date"])) {
+								$closed_date = strtotime($detail["closed_date"]);
+							} 
+							$interval = $exp_resolution_date-$start_date+1; 
+							//counting delay
+							if (!empty($exp_resolution_date)) {
+								if (empty($detail["closed_date"])) {
+									if($today > $exp_resolution_date) {
+										$delay = $today-$exp_resolution_date;
+									}
+								} else {
+									$delay = $closed_date-$exp_resolution_date;
 								}
-							} else {
-								$delay = $closed_date-$exp_resolution_date;
 							}
+							if(!empty($delay)) {
+								$detail["delay"] = floor($delay/86400); //delay in days
+							}
+							$shift = floor(($start_date-$timeline_start)/86400);
+							$detail["days"] = floor($interval/86400); //width in days of the ticket
+							$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
+							$obj["subtasks"][] = $detail;
 						}
-						if(!empty($delay)) {
-							$detail["delay"] = floor($delay/86400); //delay in days
-						}
-
-						$shift = floor(($start_date-$timeline_start)/86400);
-
-						$detail["days"] = floor($interval/86400); //width in days of the ticket
-						$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
-						$obj["subtasks"][] = $detail;
 					}
 				}
 			}
+			$pubtickets[$areaKey] = $t; 
 		}
+
 
 		$this->set("timeline_start", $timeline_start);
 		$this->set("mondayshift", $mondayshift);
 		$this->set("todayshift", $todayshift);
 		$this->set("prevmonday", $prevmonday);
-        $this->set("tickets", $tickets);
+        $this->set("pubtickets", $pubtickets);
         //pr($tickets); exit;
 
 	 }
