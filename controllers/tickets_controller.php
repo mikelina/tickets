@@ -100,7 +100,7 @@ class TicketsController extends ModulesController {
         }
 		$startTime = $startDay . " 00:00:00";
 		$this->set("startTime", $startTime);
-		$timeline_start = strtotime($startDay);
+		$timeline_start = strtotime($startTime);
 
 		$objects = array();
 		$name = "tickets";

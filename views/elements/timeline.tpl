@@ -1,7 +1,6 @@
 {$coeff=$html->params.named.coeff|default:$html->params.url.coeff|default:20}
 
-{$html->script('/tickets/js/moment-with-langs.min')}
-<div class="timeline">
+<div class="timeline" data-timeline-start="{$prevmonday|date_format:'%D'}">
 
     <header style="padding-bottom:20px;">
         <table style="width:100%;">
@@ -44,6 +43,7 @@
             {/if}
         {/foreach}  	
         </div> <!-- closing pubb -->
+        <div class="highlight-day"></div>
     </div> <!-- closing matrix -->
 </div> <!-- closing timeline -->
 
@@ -55,6 +55,7 @@
     }
 
     .matrix {
+        position: relative;
         background-color:rgba(255,255,255,0);
         background-image: linear-gradient(white 0px, transparent 0px),
         linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px),
@@ -64,16 +65,48 @@
         background-position: -{$coeff*2}px;
     }
 
+    .highlight-day {
+        width: {$coeff}px;
+        height: 100%;
+        top: 0;
+        position: absolute;
+        display: none;
+        background-color: rgba(255, 255, 0, 0.25);
+        pointer-events: none;
+        z-index: 1;
+    }
 
-     .today {
+    .highlight-day:before {
+        content: attr(data-date);
+        position: absolute;
+        left: -1000px;
+        right: -1000px;
+        top: 26px;
+        margin: auto;
+        display: inline-block;
+        text-align: center;
+        padding: 1px 5px;
+        background-color: #000;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #FFF;
+        width: 90px;
+        border-radius: 4px;
+        z-index: 3;
+    }
+
+    .today {
+        width: {$coeff}px;
         color:red;
         position:absolute;
         margin-top:-27px;
         padding-top:20px;
         height:100%;
         padding-left:5px;
-        border-left:1px solid rgba(255,0,0,1);
-        margin-left:{$todayshift*$coeff}px;
+        border-left: 1px solid rgba(255,0,0,1);
+        margin-left: {$todayshift*$coeff}px;
+        background: transparent;
+        z-index: 3;
+        pointer-events: none;
      }
 
 </style>
@@ -81,10 +114,32 @@
 <script>
     $(function(){
         var movingTicket = false;
+        var dayToTime = 1000 * 60 * 60 * 24;
+
+        var timelineStart = new Date($('.timeline').data('timeline-start')).valueOf();
+
+        $('.timeline .matrix').bind('mousemove', function(ev) {
+            var left = ev.pageX - $(this).offset().left;
+            var days = Math.floor(left / {$coeff});
+            var d = new Date((days-1) * dayToTime + timelineStart);
+
+            var month = d.getMonth()+1;
+            if (month < 10) month = '0' + month;
+
+            var day = d.getDate()+1;
+            if (day < 10) day = '0' + day;
+
+            $('.highlight-day', this)
+                .show()
+                .attr('data-date', d.getFullYear()+'-'+month+'-'+day)
+                .css('left', days * {$coeff});
+        }).bind('mouseout', function(ev) {
+            $('.highlight-day').hide();
+        });
 
         var updateDates = function(t, ui) {
             var pos = ui ? ui.position.left : 0;
-            var dayToTime = 1000 * 60 * 60 * 24;
+            
             var dif = dayToTime * pos / {$coeff};
             var startDate = new Date($(t).data('start')).valueOf();
             var endDate = startDate + dayToTime * $(t).width() / {$coeff};
@@ -101,8 +156,6 @@
                 var t = $(this).closest('.flowticket');
                 var startEl = t.find('[name="data[start_date]"]');
                 var endEl = t.find('[name="data[exp_resolution_date]"]');
-
-                var dayToTime = 1000 * 60 * 60 * 24;
 
                 var initDate = new Date(t.data('start')).valueOf();
                 var endDate = endEl.datepicker('getDate').valueOf();

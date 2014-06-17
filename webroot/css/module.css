@@ -2,11 +2,11 @@
 .obj.unread * {font-weight:bold}
 
 .editornotes {
-	background-color: #ffffff;
-	color:#000 !important;
-	font-size:1em !important;
-	width: 100%;
-	font-family: "Helvetica Neue","Helvetica","Arial",sans-serif;
+    background-color: #ffffff;
+    color:#000 !important;
+    font-size:1em !important;
+    width: 100%;
+    font-family: "Helvetica Neue","Helvetica","Arial",sans-serif;
 }
 
 /* ticketSeverity colors */
@@ -28,9 +28,9 @@
 .obsolete {}
 
 ul.users-relations li{
-	display:inline;
-	padding:4px 5px 4px 5px;
-	width:auto;
+    display:inline;
+    padding:4px 5px 4px 5px;
+    width:auto;
 }
 
 
@@ -44,9 +44,16 @@ ul.users-relations li{
     padding-bottom: 350px;
 }
 
+.timeline .tab {
+    position: relative;
+    z-index: 4;
+    margin-bottom: 20px;
+}
+
 .matrix .mainticket {
     margin-bottom:20px; 
     width:100%;
+    padding-bottom: 20px;
 }
 
 .matrix .mainticket .thead {
@@ -83,7 +90,7 @@ ul.users-relations li{
     top: 0 !important;
     box-sizing:content-box;
     white-space: nowrap;
-
+    z-index: 2;
 }
 
 .flowticket .ui-resizable-e {
