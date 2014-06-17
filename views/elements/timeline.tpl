@@ -1,8 +1,7 @@
 {$coeff=$html->params.named.coeff|default:$html->params.url.coeff|default:20}
 
-{$html->script('/tickets/js/moment-with-langs.min')}
-<div class="timeline" style="overflow:hidden; width:100%;">
-    <header>
+<div class="timeline" style="overflow:hidden; width:100%;" data-timeline-start="{$prevmonday|date_format:'%D'}">
+    <header style="padding-bottom:20px;">
         <table style="width:100%;">
             <tr>
                 <td style="border-left:1px solid rgba(255,255,255,.3)">{$prevmonday|date_format:'%a %d %b'}</td>
@@ -50,6 +49,7 @@
         </div> <!-- closing pubb -->
     {/if}
     {/foreach} 
+        <div class="highlight-day"></div>
     </div> <!-- closing matrix -->
 </div> <!-- closing timeline -->
 
@@ -69,41 +69,142 @@
         margin-left:{$todayshift*$coeff}px;
         border-left:{$coeff}px solid rgba(255,0,0,.2);
     }
+
+
+    .highlight-day {
+        width: {$coeff}px;
+        height: 100%;
+        top: 0;
+        position: absolute;
+        display: none;
+        background-color: rgba(255, 255, 0, 0.25);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .highlight-day:before {
+        content: attr(data-date);
+        position: absolute;
+        left: -1000px;
+        right: -1000px;
+        top: 26px;
+        margin: auto;
+        display: inline-block;
+        text-align: center;
+        padding: 1px 5px;
+        background-color: #000;
+        background-color: rgba(0, 0, 0, 0.75);
+        color: #FFF;
+        width: 90px;
+        border-radius: 4px;
+        z-index: 3;
+    }
+
+    .today {
+        width: {$coeff}px;
+     }
+
 </style>
 
 <script>
     $(function(){
         var movingTicket = false;
+        var dayToTime = 1000 * 60 * 60 * 24;
+
+        var timelineStart = new Date($('.timeline').data('timeline-start')).valueOf();
+
+        $('.timeline .matrix').bind('mousemove', function(ev) {
+            if (ev.target.tagName == 'H2') {
+                return true;
+            }
+            var left = ev.pageX - $(this).offset().left;
+            var days = Math.floor(left / {$coeff});
+            var d = new Date((days-1) * dayToTime + timelineStart);
+
+            var month = d.getMonth()+1;
+            if (month < 10) month = '0' + month;
+
+            var day = d.getDate()+1;
+            if (day < 10) day = '0' + day;
+
+            $('.highlight-day', this)
+                .show()
+                .attr('data-date', d.getFullYear()+'-'+month+'-'+day)
+                .css('left', days * {$coeff});
+        }).bind('mouseout', function(ev) {
+            $('.highlight-day').hide();
+        });
 
         var updateDates = function(t, ui) {
-            var pos = ui.position.left;
-            var dayToTime = 1000 * 60 * 60 * 24;
+            var pos = ui ? ui.position.left : 0;
+            
             var dif = dayToTime * pos / {$coeff};
             var startDate = new Date($(t).data('start')).valueOf();
             var endDate = startDate + dayToTime * $(t).width() / {$coeff};
             startDate += dif;
             endDate += dif;
-            var formattedStart = moment(startDate).format('ddd DD MMM YYYY');
-            var formattedEnd = moment(endDate).format('ddd DD MMM YYYY');
-            $('.info_ticket .start_date', t).text(formattedStart);
-            $('.info_ticket .end_date', t).text(formattedEnd);
-            $('[name="data[start_date]"]', t).val( moment(startDate).format('YYYY-MM-DD HH:mm') );
-            $('[name="data[exp_resolution_date]"]', t).val( moment(endDate).format('YYYY-MM-DD HH:mm') );
+            var startEl = $('[name="data[start_date]"]', t);
+            var endEl = $('[name="data[exp_resolution_date]"]', t);
+            startEl.datepicker('setDate', new Date(startDate) );
+            endEl.datepicker('setDate', new Date(endDate) );
         }
 
+        $('.dateinput').datepicker({
+            onSelect: function(ev, ui) {
+                var t = $(this).closest('.flowticket');
+                var startEl = t.find('[name="data[start_date]"]');
+                var endEl = t.find('[name="data[exp_resolution_date]"]');
+
+                var initDate = new Date(t.data('start')).valueOf();
+                var endDate = endEl.datepicker('getDate').valueOf();
+                var newStart = startEl.datepicker('getDate').valueOf();
+                var newEnd = endDate;
+
+                var d = new Date(ui.selectedYear + '/' + (ui.selectedMonth+1) + '/' + ui.selectedDay);
+                if ($(this).is('[name="data[start_date]"]')) {
+                    newStart = d.valueOf();
+                } else {
+                    newEnd = d.valueOf();
+                }
+
+                var left = {$coeff} * (newStart - initDate) / dayToTime;
+                var width = {$coeff} * (newEnd - newStart) / dayToTime;
+                t.css({
+                    left: left,
+                    width: width
+                });
+                
+                var start = startEl.data('date');
+            }
+        });
+
+        $(document).click(function(ev) {
+            if ($(ev.target).is('.info_ticket, .info_ticket *')) {
+                return true;
+            } else {
+                $(".info_ticket").fadeOut( 100 );
+            }
+        });
 
         $( ".flowticket" ).click(function(ev) {
-                var that = this;
-                if (!movingTicket) {
-                    var info = $(".info_ticket", that);
-                    $(".info_ticket").not(info).fadeOut( 100 );
-                    if (!info.is(':visible')) {
-                        info.css({
-                            left: ev.pageX - $(that).offset().left - 15
-                        })
-                    }
-                    info.fadeToggle( 150 );
+            ev.stopPropagation();
+            var that = this;
+            if ($(ev.target).is('.info_ticket, .info_ticket *')) {
+                return true;
+            }
+            if (!movingTicket) {
+                var info = $(".info_ticket", that);
+                $(".info_ticket").not(info).fadeOut( 100 );
+                if (!info.is(':visible')) {
+                    info.css({
+                        left: ev.pageX - $(that).offset().left - 15
+                    })
                 }
+                info.fadeToggle( 150 );
+            }
+            return false;
+        }).each(function() {
+            updateDates(this);
         }).not('.off').draggable({
             axis: "x",
             cursor: "move",

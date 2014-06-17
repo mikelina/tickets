@@ -27,5 +27,4 @@ $(document).ready(function(){
 	$('#ticketStatus').change(function () {
 		$('#status').val(ts[this.value]);
 	});
-
 });

@@ -2,11 +2,11 @@
 .obj.unread * {font-weight:bold}
 
 .editornotes {
-	background-color: #ffffff;
-	color:#000 !important;
-	font-size:1em !important;
-	width: 100%;
-	font-family: "Helvetica Neue","Helvetica","Arial",sans-serif;
+    background-color: #ffffff;
+    color:#000 !important;
+    font-size:1em !important;
+    width: 100%;
+    font-family: "Helvetica Neue","Helvetica","Arial",sans-serif;
 }
 
 /* ticketSeverity colors */
@@ -28,9 +28,9 @@
 .obsolete {}
 
 ul.users-relations li{
-	display:inline;
-	padding:4px 5px 4px 5px;
-	width:auto;
+    display:inline;
+    padding:4px 5px 4px 5px;
+    width:auto;
 }
 
 
@@ -40,39 +40,51 @@ ul.users-relations li{
 
 ...........................................*/
 
-    .timeline header {
-        padding-bottom:20px;
-        background-image: linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
-        /*background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;*/
-    }
+.timeline header {
+    padding-bottom:20px;
+    background-image: linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+    /*background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;*/
+}
 
-    .matrix {
-        background-color:rgba(255,255,255,0);
-        /*background-image: linear-gradient(white 0px, transparent 0px),
-        linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px), linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);*/
-        /*background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;*/
-        /*background-position: -{$coeff*2}px;*/
-    }
+.matrix {
+    position: relative;
+    background-color:rgba(255,255,255,0);
+    /*background-image: linear-gradient(white 0px, transparent 0px),
+    linear-gradient(90deg, rgba(128,128,128,.2) {$coeff*2}px, transparent 1px), linear-gradient(rgba(255,255,255,.3) 0px, transparent 0px), linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);*/
+    /*background-size:{$coeff*7}px {$coeff*5}px, {$coeff*7}px {$coeff*7}px, {$coeff}px {$coeff}px, {$coeff}px {$coeff}px;*/
+    /*background-position: -{$coeff*2}px;*/
+}
 
 
-     .today {
-        color:red;
-        position:absolute;
-        margin-top:-27px;
-        padding-top:20px;
-        height:100%;
-        padding-left:5px;
-         /*border-left:{$coeff}px solid rgba(255,0,0,1);
-       margin-left:{$todayshift*$coeff}px;*/
-     }
+ .today {
+     /*border-left:{$coeff}px solid rgba(255,0,0,1);
+   margin-left:{$todayshift*$coeff}px;*/
+    color:red;
+    position:absolute;
+    margin-top:-27px;
+    padding-top:20px;
+    height:100%;
+    padding-left:5px;
+    border-left: 1px solid rgba(255,0,0,1);
+    background: transparent;
+    z-index: 3;
+    pointer-events: none;
+ }
 
 .timeline {
     padding-bottom: 350px;
 }
 
+.timeline .tab {
+    position: relative;
+    z-index: 4;
+    margin-bottom: 20px;
+}
+
 .matrix .mainticket {
     margin-bottom:20px; 
     width:100%;
+    padding-bottom: 20px;
 }
 
 .matrix .mainticket .thead {
@@ -109,7 +121,7 @@ ul.users-relations li{
     top: 0 !important;
     box-sizing:content-box;
     white-space: nowrap;
-
+    z-index: 2;
 }
 
 .flowticket .ui-resizable-e {
@@ -132,6 +144,10 @@ ul.users-relations li{
     left: 0;
     top: 0;
     cursor: w-resize;
+}
+
+.flowticket input[type="text"] {
+    width: 100%;
 }
 
 .flowticket.analysis { background-color: #cc6666 }
@@ -186,7 +202,7 @@ background-size: 20px 20px;
     padding:10px;
     z-index: 900;
     margin-left: 0px;
-    margin-top: 25px;
+    margin-top: 15px;
 }
 
 .info_ticket td:first-child {

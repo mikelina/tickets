@@ -1,5 +1,13 @@
+{assign_associative var="params" inline="false"}
+{$html->css("ui.datepicker", null, $params)}
+
 {if strnatcmp($conf->majorVersion, '3.3') > 0}
     {$html->script('libs/jquery/jquery-migrate-1.2.1', false)} {* assure js retrocompatibility *}
+{/if}
+
+{$html->script('libs/jquery/ui/jquery.ui.datepicker.min', false)}
+{if $currLang != "eng"}
+    {$html->script("libs/jquery/ui/i18n/jquery.ui.datepicker-$currLang2.min.js", false)}
 {/if}
 
 {literal}
