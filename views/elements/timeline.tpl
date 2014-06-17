@@ -119,6 +119,9 @@
         var timelineStart = new Date($('.timeline').data('timeline-start')).valueOf();
 
         $('.timeline .matrix').bind('mousemove', function(ev) {
+            if (ev.target.tagName == 'H2') {
+                return true;
+            }
             var left = ev.pageX - $(this).offset().left;
             var days = Math.floor(left / {$coeff});
             var d = new Date((days-1) * dayToTime + timelineStart);
