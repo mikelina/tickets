@@ -158,11 +158,13 @@ class TicketsController extends ModulesController {
 			// for each root ticket  get subtask tickets details
 			foreach ($t as &$obj) {
 				$obj['publication_title'] = $areaTitle;
+				$all_ends = array();
 				foreach ($obj['RelatedObject'] as $r) {
 					if($r['switch'] == 'subtask') {	
 						$delay = '';
 						$detail = $this->Ticket->find('first', array(
 						    'conditions' => array('Ticket.id' => $r['object_id'])
+						    //todo che deve possedere date di fine e inizio?
 						));
 						//duration in days of the ticket
 						if (!empty($detail["start_date"])) {
@@ -189,20 +191,25 @@ class TicketsController extends ModulesController {
 							$detail["days"] = floor($interval/86400); //width in days of the ticket
 							$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
 							$obj["subtasks"][] = $detail;
+							//subticket highest end date
+							$all_ends[] = $exp_resolution_date;
 						}
 					}
+				}
+				if(!empty($all_ends)) {
+					$obj['general_end'] = max($all_ends);
+					$obj['general_days'] = floor(($obj['general_end'] - $prevmonday)/86400);
 				}
 			}
 			$pubtickets[$areaKey] = $t; 
 		}
-
 
 		$this->set("timeline_start", $timeline_start);
 		$this->set("mondayshift", $mondayshift);
 		$this->set("todayshift", $todayshift);
 		$this->set("prevmonday", $prevmonday);
         $this->set("pubtickets", $pubtickets);
-        //pr($tickets); exit;
+        //pr($pubtickets); exit;
 
 	 }
 
