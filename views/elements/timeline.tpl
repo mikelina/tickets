@@ -51,7 +51,9 @@
                                 {/if}"
                                 data-start="{$subtask.start_date|date_format:'%a %d %b %Y'}"
                                 data-end="{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}">
-                                    <!-- {$subtask.Category.0.name|default:''} {$subtask.ticket_status|default:''} {$subtask.title|default:''} -->
+                                    {$subtask.Category.0.name|default:''} 
+                                    &nbsp;&nbsp; / {$subtask.ticket_status|default:''} 
+                                     <!-- {$subtask.title|default:''} -->
                                     <!-- {if ($subtask.Annotation|@count > 0)}<span class="ncomments">{$subtask.Annotation|@count} comments</span>{/if} -->
                                     {$view->element('timeline_info_ticket',['subtask' => $subtask])}
                                 </div>
@@ -83,10 +85,10 @@
         {if $todayshift < 0}
             display:none;
         {else}
-            margin-left:{$todayshift*$coeff}px;
+            margin-left:{$todayshift*$coeff+1}px;
         {/if}
-        border-left:{$coeff}px solid rgba(255,0,0,.2);
-        width: {$coeff}px;
+        border-left:{$coeff-1}px solid rgba(255,0,0,.2);
+        /*width: {$coeff}px;*/
     }
     .highlight-day {
         width: {$coeff}px;

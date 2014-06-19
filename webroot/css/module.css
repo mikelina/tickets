@@ -71,7 +71,7 @@ ul.users-relations li{
 
 .timeline {
     padding-bottom: 350px;
-    overflow:auto;
+    overflow-x:auto;
     width:100%;
 }
 
@@ -119,11 +119,11 @@ ul.users-relations li{
     color:white !important;
     text-indent:5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
-    /*
+    
     position: relative !important;
     top: 0 !important;
     z-index: 1000;
-    */
+    
     box-sizing:content-box;
     white-space: nowrap;
     cursor: pointer;
@@ -155,16 +155,16 @@ ul.users-relations li{
     width: 100%;
 }
 
-.flowticket.analysis { background-color: #cc6666 }
-.flowticket.tagging  { background-color: #ff9900 }
-.flowticket.editing { background-color: #99cc66 }
-.flowticket.checking  { background-color: #6e9bed }
-.flowticket.revision  { background-color: #3d82c7 }
-.flowticket.release  { background-color: #073564 }
+.flowticket.analysis { background-color: #cc6666 }  /* analisi del libro                            new | assigned | developement | test | closed */ 
+.flowticket.tagging  { background-color: #ff9900 }  /* taggatura                                    new | assigned | developement | test | closed */ 
+.flowticket.editing { background-color: #99cc66 }   /* editing BEdita iebattore                     new | assigned | developement | closed */ 
+.flowticket.checking  { background-color: #6e9bed }  /* correzioni e ticket redattori               new | assigned | developement | closed */ 
+.flowticket.revision  { background-color: #3d82c7 }  /* soluzioni ticket e rifiniture iebattori     new | assigned | developement | test | closed | reopened */ 
+.flowticket.release  { background-color: #073564 }  /* applicazione permessi e pubblicazione        new | assigned | developement | test | closed */ 
 
 .flowticket.resolved  { }
 /*
-.flowticket.overdelayed  {
+.flowticket.analysis  {
 background: 
 linear-gradient(135deg, red 25%, transparent 25%) -50px 0,
 linear-gradient(225deg, red 25%, transparent 25%) -50px 0,
