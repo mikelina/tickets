@@ -49,8 +49,8 @@
                                 {if !empty($subtask.delay)}
                                     border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,1)
                                 {/if}"
-                                data-start="{$subtask.start_date|date_format:'%a %d %b %Y'}"
-                                data-end="{$subtask.exp_resolution_date|date_format:'%a %d %b %Y'}">
+                                data-start="{$subtask.start_date}"
+                                data-end="{$subtask.exp_resolution_date}">
                                     {$subtask.Category.0.name|default:''} 
                                     &nbsp;&nbsp; / {$subtask.ticket_status|default:''} 
                                      <!-- {$subtask.title|default:''} -->
@@ -150,7 +150,6 @@
 
         var updateDates = function(t, ui) {
             var pos = ui ? ui.position.left : 0;
-            
             var dif = dayToTime * pos / {$coeff};
             var startDate = new Date($(t).data('start')).valueOf();
             var endDate = startDate + dayToTime * $(t).width() / {$coeff};
@@ -158,8 +157,12 @@
             endDate += dif;
             var startEl = $('[name="data[start_date]"]', t);
             var endEl = $('[name="data[exp_resolution_date]"]', t);
-            startEl.datepicker('setDate', new Date(startDate) );
-            endEl.datepicker('setDate', new Date(endDate) );
+            startDate = new Date(startDate);
+            endDate = new Date(endDate);
+            startEl.datepicker('setDate', startDate);
+            endEl.datepicker('setDate', endDate);
+            var durate = (endDate.valueOf() - startDate.valueOf()) / (1000 * 60 * 60 * 24);
+            $(t).find('.durate-field').text(durate);
         }
 
         $('.dateinput').datepicker({
@@ -195,7 +198,7 @@
             if ($(ev.target).is('.info_ticket, .info_ticket *')) {
                 return true;
             } else {
-                $(".info_ticket").fadeOut( 100 );
+                $(".info_ticket").fadeOut( 100 ).closest('.flowticket').removeClass('active');
             }
         });
 
@@ -207,12 +210,13 @@
             }
             if (!movingTicket) {
                 var info = $(".info_ticket", that);
-                $(".info_ticket").not(info).fadeOut( 100 );
+                $(".info_ticket").not(info).fadeOut( 100 ).closest('.flowticket').removeClass('active');
                 if (!info.is(':visible')) {
                     info.css({
                         left: ev.pageX - $(that).offset().left - 15
                     })
                 }
+                $(that).toggleClass('active');
                 info.fadeToggle( 150 );
             }
             return false;
@@ -222,7 +226,10 @@
             axis: "x",
             cursor: "move",
             grid: [ {$coeff}, {$coeff} ],
+            delay: 1000,
             start: function() {
+                var info = $(".info_ticket", this);
+                $(".info_ticket").not(info).fadeOut( 100 ).closest('.flowticket').removeClass('active');
                 movingTicket = true;
             },
             drag: function(event, ui) {
@@ -237,6 +244,8 @@
         }).resizable({
             handles: "e, w",
             start: function() {
+                var info = $(".info_ticket", this);
+                $(".info_ticket").not(info).fadeOut( 100 ).closest('.flowticket').removeClass('active');
                 movingTicket = true;
             },
             grid: [ {$coeff}, {$coeff} ],

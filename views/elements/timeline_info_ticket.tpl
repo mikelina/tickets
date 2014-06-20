@@ -63,7 +63,7 @@
                 <td>closed on:</td><td class="tcal">{$subtask.closed_date|date_format:'%a %d %b %Y'}</td>
             </tr>
             {/if}
-            <tr><td>duration:</td><td>{$subtask.days} days</td></tr>
+            <tr><td>duration:</td><td><span class="durate-field">{$subtask.days}</span> days</td></tr>
             {if !empty($subtask.delay)}
                 <tr><td>delay:</td><td>{$subtask.delay} days</td></tr>
             {/if}

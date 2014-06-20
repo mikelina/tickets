@@ -127,6 +127,10 @@ ul.users-relations li{
     cursor: pointer;
 }
 
+.flowticket.active {
+    z-index: 1001;
+}
+
 .flowticket .ui-resizable-e {
     height:20px;
     max-height:20px;
