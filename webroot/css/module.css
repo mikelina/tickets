@@ -119,10 +119,9 @@ ul.users-relations li{
     color:white !important;
     text-indent:5px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
-    /*
     position: relative !important;
     top: 0 !important;
-    z-index: 1000;
+    /*z-index: 1000;
     */
     box-sizing:content-box;
     white-space: nowrap;
