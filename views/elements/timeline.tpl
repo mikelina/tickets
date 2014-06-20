@@ -47,7 +47,7 @@
                                 <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.status} {$subtask.ticket_status}" 
                                 style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px !important; 
                                 {if !empty($subtask.delay)}
-                                    border-right:{$subtask.delay*$coeff}px solid rgba(255,0,0,1)
+                                    border-right:{($subtask.delay+1)*$coeff}px solid rgba(255,0,0,1)
                                 {/if}"
                                 data-start="{$subtask.start_date}"
                                 data-end="{$subtask.exp_resolution_date}">
