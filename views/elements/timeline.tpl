@@ -8,7 +8,7 @@
         </table>
         <div class="t_today">today</div>
     </header>
-    <div class="matrix" style="width:100%">
+    <div class="matrix">
     <!-- TODO foreach pubblicazioni -->
     {foreach from=$pubtickets item=pubticket key=key}
     {if !empty($pubticket)}
@@ -21,21 +21,27 @@
                     {if !empty($ticket.general_days)}
                         width:{$ticket.general_days*$coeff}px;
                     {/if}
-                    {if ($ticket.general_days < 0)}
+                    {if !empty($ticket.general_days) && ($ticket.general_days < 0)}
                         display:none
                     {/if}
                     ">
                         <tr>
-                            <td class="plusminus"></td>
-                            <td>
+                            
+                            <td class="ticket_title" style="width:100%; border-right:1px solid #dedede">
+                                <span class="plusminus"></span>&nbsp;&nbsp;
+
                                 {$ticket.title} 
                                 <!--
                                 &nbsp;&nbsp;&nbsp;<span class="relnumb">{$ticket.subtasks|@count|default:0} subtask</span>
                                 &nbsp;&nbsp;&nbsp;{$ticket.general_end|date_format:"%x"|default:''} 
                                 &nbsp;&nbsp;&nbsp;{$ticket.general_days|default:''} -->
                             </td>
+                            <td style="text-align:right; padding-right:10px; border-right:1px solid #dedede">
+                                <a class="addsubtask" href="#">add</a>
+                                 {$view->element('timeline_info_ticket',['parent' => $ticket])}
+                            </td>
                             <td style="text-align:right; padding-right:10px">
-                                <a target="_blank" href="{$html->url('/')}view/{$ticket.id}">view</a> | add
+                                <a target="_blank" href="{$html->url('/')}view/{$ticket.id}">view</a>
                             </td>
                         </tr>
                     </table>
@@ -47,7 +53,7 @@
                                 <div class="flowticket {$subtask.Category.0.name|default:''} {$subtask.status} {$subtask.ticket_status}" 
                                 style="margin-left:{$subtask.shift*$coeff}px; width:{$subtask.days*$coeff}px !important; 
                                 {if !empty($subtask.delay)}
-                                    border-right:{($subtask.delay+1)*$coeff}px solid rgba(255,0,0,1)
+                                    border-right:{($subtask.delay)*$coeff}px solid rgba(255,0,0,1)
                                 {/if}"
                                 data-start="{$subtask.start_date}"
                                 data-end="{$subtask.exp_resolution_date}">
@@ -93,7 +99,7 @@
     .highlight-day {
         width: {$coeff}px;
         height: 100%;
-        top: 0;
+        top: -75px;
         position: absolute;
         display: none;
         background-color: rgba(255, 255, 0, 0.25);
@@ -114,7 +120,7 @@
         background-color: rgba(0, 0, 0, 0.75);
         color: #FFF;
         width: 90px;
-        border-radius: 4px;
+        border-radius: 0px;
         z-index: 3;
     }
 </style>
@@ -142,7 +148,8 @@
 
             $('.highlight-day', this)
                 .show()
-                .attr('data-date', d.getFullYear()+'-'+month+'-'+day)
+                //.attr('data-date', d.getFullYear()+'-'+month+'-'+day)
+                .attr('data-date', day+'-'+month+'-'+d.getFullYear())
                 .css('left', days * {$coeff});
         }).bind('mouseout', function(ev) {
             $('.highlight-day').hide();
@@ -195,7 +202,7 @@
         });
 
         $(document).click(function(ev) {
-            if ($(ev.target).is('.info_ticket, .info_ticket *')) {
+            if ($(ev.target).is('.info_ticket, .info_ticket *,.addsubtask')) {
                 return true;
             } else {
                 $(".info_ticket").fadeOut( 100 ).closest('.flowticket').removeClass('active');
@@ -260,9 +267,19 @@
             }
         });
 
-        $(".thead").click(function(){
+        $(".ticket_title",".thead").click(function(){
             $(this).closest(".mainticket").toggleClass("closed");
+
         });
+
+        $(".thead").each(function(){
+             var _thead = $(this);
+             $(".addsubtask",_thead).click(function(){
+                   $(".info_ticket",_thead).toggle();
+             });
+
+        });
+
 
     });
 </script>

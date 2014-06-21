@@ -88,8 +88,8 @@ class TicketsController extends ModulesController {
 
 	public function timeline () {
     	$conf  = Configure::getInstance() ;
-		
 		$tickets = array();
+		$this->loadCategories(array($conf->objectTypes['ticket']["id"]));
 
         if(!empty($this->params["url"]["Date_Day"])) {
             $startDay = $this->params["url"]["Date_Year"] . "-" . 

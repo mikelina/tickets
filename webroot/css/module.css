@@ -81,6 +81,11 @@ ul.users-relations li{
     margin-bottom: 20px;
 }
 
+ .matrix {
+    width:100%;
+    min-height:768px;
+}
+
 .matrix .mainticket {
     margin-bottom:20px;
     width:100%;
@@ -202,14 +207,18 @@ background-size: 20px 20px;
 
 .info_ticket {
     display:none;
-    width:220px;
+    width:230px;
     color:#FFF;
     background-color: #444;
     position:absolute;
     padding:10px;
     z-index: 15;
     margin-left: 0px;
-    margin-top: 15px;
+    margin-top: 2px;
+}
+
+.info_ticket.add_ticket {
+    z-index: 115 !important;
 }
 
 .info_ticket td:first-child {
@@ -261,6 +270,10 @@ background-size: 20px 20px;
 
  .info_ticket TR:first-child {
     border:0px;
+ }
+
+ .info_ticket TD {
+   padding:5px !important;
  }
 
  TD.tcal {
