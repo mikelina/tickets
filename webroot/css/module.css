@@ -170,8 +170,12 @@ ul.users-relations li{
 .flowticket.release  { background-color: #073564 }  /* applicazione permessi e pubblicazione        new | assigned | developement | test | closed */ 
 
 .flowticket.resolved  { }
+
+.flowticket.off {
+    text-decoration: line-through;
+}
 /*
-.flowticket.analysis  {
+.flowticket.off  {
 background: 
 linear-gradient(135deg, red 25%, transparent 25%) -50px 0,
 linear-gradient(225deg, red 25%, transparent 25%) -50px 0,

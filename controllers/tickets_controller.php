@@ -138,71 +138,74 @@ class TicketsController extends ModulesController {
 			$t = $this->Ticket->find('all', array(
 			    'conditions' => array(
 			        'object_type_id' => Configure::read('objectTypes.ticket.id'),
-			        'Tree.parent_id' => $areaId
+			        'Tree.parent_id' => $areaId,
+			      /*  'AND' => array(
+			        	'exp_resolution_date > 0'
+			        )*/
 			    ),
 			    'contain' => array(
 			        'BEObject' => array(
-			            'ObjectType',
-			            'UserCreated',
-			            'UserModified',
-			            'ObjectProperty',
-			            'RelatedObject',
-			            'Annotation',
-			            'Category',
-			            'User',
-			            'Version' => array('User.realname', 'User.userid')
+			            'RelatedObject'
 			        ),
 			        'Tree'
 			    )
 			));
-			// for each root ticket  get subtask tickets details
-			foreach ($t as &$obj) {
-				$obj['publication_title'] = $areaTitle;
-				$all_ends = array();
-				foreach ($obj['RelatedObject'] as $r) {
-					if($r['switch'] == 'subtask') {	
-						$delay = '';
-						$detail = $this->Ticket->find('first', array(
-						    'conditions' => array('Ticket.id' => $r['object_id'])
-						    //todo che deve possedere date di fine e inizio?
-						));
-						//duration in days of the ticket
-						if (!empty($detail["start_date"])) {
-							$start_date = strtotime($detail["start_date"]);
-							$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
-							if (!empty($detail["closed_date"])) {
-								$closed_date = strtotime($detail["closed_date"]);
-							} 
-							$interval = $exp_resolution_date-$start_date+1; 
-							//counting delay
-							if (!empty($exp_resolution_date)) {
-								if (empty($detail["closed_date"])) {
-									if($today > $exp_resolution_date) {
-										$delay = $today-$exp_resolution_date;
+
+			if(!empty($t)) {
+				// for each root ticket  get subtask tickets details
+				foreach ($t as &$obj) {
+					$obj['publication_title'] = $areaTitle;
+					$all_ends = array();
+					foreach ($obj['RelatedObject'] as $r) {
+						if($r['switch'] == 'subtask') {	
+							$delay = '';
+							$detail = $this->Ticket->find('first', array(
+							    'conditions' => array(
+							    	'Ticket.id' => $r['object_id'],
+							    	'AND' => array(
+							    		'start_date > 0',
+							    		'exp_resolution_date > '.$prevmonday // TODO  OR closed date > prevmonday
+							    	)
+							    )
+							));
+							//duration in days of the ticket
+							if (!empty($detail["start_date"])) {
+								$start_date = strtotime($detail["start_date"]);
+								$exp_resolution_date = strtotime($detail["exp_resolution_date"]);
+								if (!empty($detail["closed_date"])) {
+									$closed_date = strtotime($detail["closed_date"]);
+								} 
+								$interval = $exp_resolution_date-$start_date+1; 
+								//counting delay
+								if (!empty($exp_resolution_date)) {
+									if (empty($detail["closed_date"])) {
+										if($today > $exp_resolution_date) {
+											$delay = $today-$exp_resolution_date;
+										}
+									} else {
+										$delay = $closed_date-$exp_resolution_date;
 									}
-								} else {
-									$delay = $closed_date-$exp_resolution_date;
 								}
+								if(!empty($delay)) {
+									$detail["delay"] = floor($delay/86400); //delay in days
+								}
+								$shift = floor(($start_date-$timeline_start)/86400);
+								$detail["days"] = floor($interval/86400); //width in days of the ticket
+								$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
+								$obj["subtasks"][] = $detail;
+								//subticket highest end date
+								$all_ends[] = $exp_resolution_date;
 							}
-							if(!empty($delay)) {
-								$detail["delay"] = floor($delay/86400); //delay in days
-							}
-							$shift = floor(($start_date-$timeline_start)/86400);
-							$detail["days"] = floor($interval/86400); //width in days of the ticket
-							$detail["shift"] = $shift+$mondayshift; //distance from now (or parmas starting date) 
-							$obj["subtasks"][] = $detail;
-							//subticket highest end date
-							$all_ends[] = $exp_resolution_date;
 						}
+					} // end foreach 2
+					if(!empty($all_ends)) {
+						$obj['general_end'] = max($all_ends);
+						$obj['general_days'] = floor(($obj['general_end'] - $prevmonday)/86400);
 					}
-				}
-				if(!empty($all_ends)) {
-					$obj['general_end'] = max($all_ends);
-					$obj['general_days'] = floor(($obj['general_end'] - $prevmonday)/86400);
-				}
+				}  // end foreach 1
+				$pubtickets[$areaKey] = $t; 
 			}
-			$pubtickets[$areaKey] = $t; 
-		}
+		} //end foreach 0
 
 		$this->set("timeline_start", $timeline_start);
 		$this->set("mondayshift", $mondayshift);

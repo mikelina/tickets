@@ -36,6 +36,9 @@
                                 &nbsp;&nbsp;&nbsp;{$ticket.general_end|date_format:"%x"|default:''} 
                                 &nbsp;&nbsp;&nbsp;{$ticket.general_days|default:''} -->
                             </td>
+                             <td style="text-align:right; padding-right:10px; border-right:1px solid #dedede">
+                                {$ticket.subtasks|@count|default:0} subtask
+                            <td>
                             <td style="text-align:right; padding-right:10px; border-right:1px solid #dedede">
                                 <a class="addsubtask" href="#">add</a>
                                  {$view->element('timeline_info_ticket',['parent' => $ticket])}
