@@ -246,11 +246,14 @@ class TicketsController extends ModulesController {
 			}
 		} //end foreach 0
 
+		$f = array();
+
 		$this->set("timeline_start", $timeline_start);
 		$this->set("mondayshift", $mondayshift);
 		$this->set("todayshift", $todayshift);
 		$this->set("prevmonday", $prevmonday);
         $this->set("pubtickets", $pubtickets);
+        $this->set('filter', $f);
         //pr($pubtickets); exit;
 
 	 }

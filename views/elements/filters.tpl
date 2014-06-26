@@ -44,7 +44,7 @@
 								</td>
 								<td style="vertical-align: top">
 							{/if}
-							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if in_array($key, $filter['Ticket.ticket_status'])}checked="checked"{/if}/>
+							<input type="checkbox" value="{$key}" name="data[status][{$key}]" class="filterTicket" rel="{$sta}" id="status_{$key}" {if !empty($filter['Ticket.ticket_status']) && in_array($key, $filter['Ticket.ticket_status'])}checked="checked"{/if}/>
 							<span>{t}{$key}{/t}:</span><br />
 							{$prevsta=$sta}	
 						{/foreach}
