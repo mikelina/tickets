@@ -126,14 +126,14 @@ ul.users-relations li{
     box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
     position: relative !important;
     top: 0 !important;
-    z-index: 1000;
+    z-index: 14;
     box-sizing:content-box;
     white-space: nowrap;
     cursor: pointer;
 }
 
 .flowticket.active {
-    z-index: 1001;
+    z-index: 15;
 }
 
 .flowticket .ui-resizable-e {
@@ -211,7 +211,7 @@ background-size: 20px 20px;
 
 .info_ticket {
     display:none;
-    width:230px;
+    min-width: 230px;
     color:#FFF;
     background-color: #444;
     position:absolute;
