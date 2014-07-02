@@ -62,7 +62,7 @@ ul.users-relations li{
     color:red;
     position:absolute;
     margin-top:-27px;
-    padding-top:20px;
+    padding-top: 25px;
     height:100%;
     padding-left:5px;
     z-index: 3;
@@ -70,9 +70,10 @@ ul.users-relations li{
  }
 
 .timeline {
-    padding-bottom: 350px;
     overflow-x:auto;
+    overflow-y: hidden;
     width:100%;
+    position: relative;
 }
 
 .timeline .tab {
@@ -83,7 +84,7 @@ ul.users-relations li{
 
  .matrix {
     width:100%;
-    min-height:768px;
+    padding-bottom: 400px;
 }
 
 .matrix .mainticket {

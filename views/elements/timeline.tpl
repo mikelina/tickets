@@ -12,7 +12,7 @@
     <!-- TODO foreach pubblicazioni -->
     {foreach from=$pubtickets item=pubticket key=key}
     {if !empty($pubticket)}
-        <div class="tab"><h2>{$key|upper} &nbsp;&nbsp;&nbsp;<span class="relnumb">{$pubticket|@count} tickets</span></h2></div>
+        <div class="tab"><h2>{$key|upper} &nbsp;&nbsp;&nbsp;<span class="relnumb">{$pubticket|@count} ticket (s)</span></h2></div>
         <div id="{$key}"> 
             {foreach from=$pubticket item=ticket}
                 <div class="mainticket"> <!-- ticket principale -->
@@ -102,7 +102,7 @@
     .highlight-day {
         width: {$coeff}px;
         height: 100%;
-        top: -75px;
+        top: 0px;
         position: absolute;
         display: none;
         background-color: rgba(255, 255, 0, 0.25);
