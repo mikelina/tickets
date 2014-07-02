@@ -40,7 +40,7 @@
                                 {$ticket.subtasks|@count|default:0} subtask
                             </td>
                             <td style="text-align:right; padding-right:10px; border-right:1px solid #dedede">
-                                <a class="addsubtask" href="#">add</a>
+                                <a class="addsubtask" href="javascript:return;">add</a>
                                  {$view->element('timeline_info_ticket',['parent' => $ticket])}
                             </td>
                             <td style="text-align:right; padding-right:10px">
