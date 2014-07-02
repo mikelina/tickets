@@ -295,7 +295,7 @@
             $(this).ajaxSubmit({
                 dataType: 'json',
                 beforeSubmit: function() {
-                    $(that).hide()
+                    $(that).hide();
                     $(that).parents('.info_ticket:first').addClass('loader').show();
                 },
                 success: function(data) {
