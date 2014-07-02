@@ -207,6 +207,12 @@ class TicketsController extends ModulesController {
 							    	)
 							    )
 							));
+
+							// format object users relation to notify
+							if (!empty($detail['User'])) {
+								$detail['User'] = Set::combine($detail, 'User.{n}.id', 'User.{n}', 'User.{n}.ObjectUser.switch');
+							}
+
 							//duration in days of the ticket
 							if (!empty($detail["start_date"])) {
 								$start_date = strtotime($detail["start_date"]);

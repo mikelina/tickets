@@ -130,6 +130,7 @@
 
 <script>
     $(function(){
+        var ts = JSON.parse('{$conf->ticketStatus|json_encode}');
         var movingTicket = false;
         var dayToTime = 1000 * 60 * 60 * 24;
 
@@ -281,6 +282,48 @@
                    $(".info_ticket",_thead).toggle();
              });
 
+        });
+
+        // save
+        $('.info_ticket').find('form').submit(function(e) {
+            e.preventDefault();
+            var that = this;
+            // update status
+            var ticketStatus = $(this).find('select[name*=ticket_status]').val();
+            $(this).find('input[name=data\\[status\\]]').val(ts[ticketStatus]);
+
+            $(this).ajaxSubmit({
+                dataType: 'json',
+                beforeSubmit: function() {
+                    $(that).hide()
+                    $(that).parents('.info_ticket:first').addClass('loader').show();
+                },
+                success: function(data) {
+                    $(that).parents('.info_ticket:first').removeClass('loader');
+                    $(that).show();
+                    // data contains object data saved
+                    if (typeof data != 'undefined' && data.id) {
+                        // update timeline
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('textStatus: ' + textStatus + ', errorThrown: ' + errorThrown);
+                    $(that).show()
+                    $(that).parents('.info_ticket:first');
+                    try {
+                        if (jqXHR.responseText) {
+                            var data = JSON.parse(jqXHR.responseText);
+                            if (typeof data != 'undefined' && data.errorMsg && data.htmlMsg) {
+                                $('#messagesDiv').empty();
+                                $('#messagesDiv').html(data.htmlMsg).triggerMessage('error');
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Missing responseText or it's not a valid json");
+                    }
+                }
+            });
+            return false;
         });
 
 

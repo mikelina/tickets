@@ -157,9 +157,9 @@ class TicketNotifierBehavior extends NotifyBehavior {
 			"title" => $data["title"],
 			"id" => $data["id"],
 			"url" => $this->getContentUrl($data),
-			"text" => strip_tags($data["description"]),
 			"beditaUrl" => Configure::read("beditaUrl"),
 		);
+		$params['text'] = (!empty($data["description"])) ? strip_tags($data["description"]) : '';
 		$userModel = ClassRegistry::init("User");
 		// verify new assignements, and removed assignement
 		$newAssigned = array_diff($assignedUsers, $prevAssignedUsers);
