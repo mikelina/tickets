@@ -561,5 +561,111 @@ class TicketsController extends ModulesController {
 		return false ;
 	}
 
+	public function importTimelineJSON() {
+		$json = '';
+		if (!empty($this->params['form']) && !empty($this->params['form']['json'])) {
+			$json = $this->params['form']['json'];
+		}
+
+		$objects = json_decode($json);
+		if ($objects !== null) {
+			$categoryModel = ClassRegistry::init('Category');
+			$categoryModel->Behaviors->disable('CompactResult');
+			$conf = Configure::getInstance();
+			foreach ($objects as $key => $ticket) {
+				//find the publication
+				$positionId = ClassRegistry::init('BEObject')->getIdFromNickname($ticket->position);
+				$this->data = array(
+					'title' => $ticket->name,
+					'status' => $conf->ticketStatus['new'],
+					'ticket_status' => 'new',
+					'description' => '',
+					'body' => '',
+					'object_type_id' => $conf->objectTypes['ticket']['id'],
+					'destination' => array($positionId),
+					'users' => array(
+						'notify' => array(),
+						'assigned' => array()
+					)
+				);
+
+				$this->checkWriteModulePermission();
+				$this->Transaction->begin();
+				$this->Ticket->create();
+				$this->saveObject($this->Ticket);
+				$this->Transaction->commit();
+
+				$ticketId = $this->Ticket->id;
+				if (!empty($ticket->subtickets)) {
+					foreach ($ticket->subtickets as $key => $subticket) {
+						$subtitle = $ticket->name;
+						$categoryId = false;
+						if (!empty($subticket->Category)) {
+							$subtitle .= ' - ' . $subticket->Category[0];
+							$categoryId = $categoryModel->field('id', array(
+								'name' => $subticket->Category[0]
+							));
+						}
+
+						if (!empty($subticket->assigne)) {
+							$assigned = ClassRegistry::init('User')->field('id', array(
+								'userid' => $subticket->assigne
+							));
+						}
+
+						$status = 'new';
+						if (!empty($assigned)) {
+							$status = 'assigned';
+						}
+
+						if (!empty($subticket->start_date)) {
+							$subticket->start_date = date('Y-m-d', $subticket->start_date/1000);
+						}
+
+						if (!empty($subticket->exp_res_date)) {
+							$subticket->exp_res_date = date('Y-m-d', $subticket->exp_res_date/1000);
+						}
+	
+						$this->data = array(
+							'title' => $subtitle,
+							'status' => $conf->ticketStatus[$status],
+							'ticket_status' => $status,
+							'description' => (!empty($subticket->description)) ? $subticket->description : '',
+							'body' => '',
+							'start_date' => (!empty($subticket->start_date)) ? $subticket->start_date : '',
+							'exp_resolution_date' => (!empty($subticket->exp_res_date)) ? $subticket->exp_res_date : '',
+							'RelatedObject' => array(
+								'subtask_of' => array(
+									$ticketId => array(
+										'id' => $ticketId
+									)
+								)
+							),
+							'users' => array(
+								'notify' => '',
+								'assigned' => ''
+							)
+						);
+
+						if (!empty($assigned)) {
+							$this->data['users']['assigned'] = $assigned;
+						}
+
+						if ($categoryId != false) {
+							$this->data['Category'] = array($categoryId);
+						}
+
+						$this->Transaction->begin();
+						$this->Ticket->create();
+						$this->saveObject($this->Ticket);
+						$this->Transaction->commit();
+					}
+				}
+			}
+		}
+
+		$this->redirect('timeline');
+	}
+
 }
 ?>

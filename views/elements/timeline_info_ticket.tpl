@@ -8,7 +8,7 @@
            <h2>{$parent.title|default:$parent.nickname}</h2>
         </div>
 
-        <input type="hidden" name="data[RelatedObject][subtask_of][$parent.id][id]" value="{$parent.id}"/>
+        <input type="hidden" name="data[RelatedObject][subtask_of][{$parent.id}][id]" value="{$parent.id}"/>
 
     {else}
 

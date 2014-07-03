@@ -35,6 +35,14 @@
     	{$view->element("timeline")}
 
     	</form>
-</div>
+
+        <div class="tab">
+            <h2>Import from JSON</h2>
+        </div>
+        <form method="post" name="importjson" action="{$html->url('/tickets/importTimelineJSON')}">
+            <textarea name="json" style="width: 100%"></textarea>
+            <input type="submit" value="load" />
+        </form>
+    </div>
 
 {/if}
